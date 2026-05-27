@@ -84,9 +84,11 @@ zora-app/
 
 ## 🏢 About
 
-Built by **Xorvion** — a small team in Noida, India, making tools we want to use ourselves. Zora is our flagship assistant.
+Built by **Xorvion Pvt Ltd** — a small team in Noida, India, making tools we want to use ourselves. Zora is our flagship assistant.
 
-📧 [xorvion.ai@gmail.com](mailto:xorvion.ai@gmail.com)
+🌐 **Website:** [xorvion-ai.vercel.app](https://xorvion-ai.vercel.app/)  
+🔗 **LinkedIn:** [linkedin.com/company/xorvion](https://linkedin.com/company/xorvion)  
+📧 **Email:** [xorvion.ai@gmail.com](mailto:xorvion.ai@gmail.com)
 
 ---
 

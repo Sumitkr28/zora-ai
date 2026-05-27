@@ -1,0 +1,191 @@
+/* Zora — Brushed Steel design tokens. Ported verbatim from design_handoff_zora/design_files/tokens.css */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Surfaces */
+  --bg-0: #060607;
+  --bg-1: #0c0d0f;
+  --bg-2: #131418;
+  --bg-3: #1b1d22;
+  --bg-4: #24272d;
+
+  /* Text */
+  --t-1: #ececec;
+  --t-2: #b8bcc2;
+  --t-3: #7a7f87;
+  --t-4: #50545b;
+
+  /* Steel */
+  --steel-100: #e8eaee;
+  --steel-200: #c8ccd2;
+  --steel-300: #9aa0a8;
+  --steel-400: #6a6f78;
+  --steel-500: #43474e;
+  --steel-600: #2a2d33;
+  --steel-700: #1a1c20;
+
+  /* Borders */
+  --bd-1: rgba(255,255,255,0.06);
+  --bd-2: rgba(255,255,255,0.10);
+  --bd-3: rgba(255,255,255,0.18);
+  --bd-bright: rgba(232,234,238,0.32);
+
+  /* Brushed steel surface gradient */
+  --brushed: linear-gradient(180deg, #2a2d33 0%, #1a1c20 50%, #0f1013 100%);
+  --brushed-hi: linear-gradient(180deg, #3a3e45 0%, #24272d 50%, #16181c 100%);
+  --steel-shine: #ececec;
+  --steel-chrome: #d4d6da;
+
+  /* Glow */
+  --glow-steel: 0 0 32px rgba(200,204,210,0.12);
+  --glow-soft: 0 0 60px rgba(154,160,168,0.08);
+
+  /* Radii */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-2xl: 28px;
+
+  /* Bubble — tweakable via Tweaks panel */
+  --bubble-r: 14px;
+
+  /* Fonts */
+  --font-sans: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  color: var(--t-1);
+  background: var(--bg-0);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Reusable brushed-steel surface */
+.brushed {
+  background: var(--brushed);
+  position: relative;
+}
+.brushed::before {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(255,255,255,0.018) 0 1px,
+      transparent 1px 3px),
+    radial-gradient(120% 80% at 50% -20%, rgba(255,255,255,0.06), transparent 60%);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Subtle grain */
+.grain::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.04 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  pointer-events: none;
+  opacity: 0.6;
+  mix-blend-mode: overlay;
+  border-radius: inherit;
+}
+
+/* Buttons */
+.btn {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  border: 1px solid var(--bd-2);
+  background: var(--bg-3);
+  color: var(--t-1);
+  border-radius: var(--r-md);
+  padding: 10px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background .15s, border .15s, transform .1s;
+}
+.btn:hover { background: var(--bg-4); border-color: var(--bd-3); }
+.btn:active { transform: translateY(1px); }
+.btn.primary {
+  background: var(--steel-shine);
+  color: #0a0a0a;
+  border-color: rgba(255,255,255,0.3);
+  font-weight: 600;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+}
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; border-color: var(--bd-2); }
+.btn.ghost:hover { background: rgba(255,255,255,0.04); }
+
+/* Inputs */
+.input {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--bd-2);
+  color: var(--t-1);
+  border-radius: var(--r-md);
+  padding: 11px 14px;
+  width: 100%;
+  outline: none;
+  transition: border .15s, background .15s;
+}
+.input:focus { border-color: var(--bd-bright); background: var(--bg-3); }
+.input::placeholder { color: var(--t-4); }
+
+/* Text helpers */
+.mono { font-family: var(--font-mono); letter-spacing: -0.01em; }
+.muted { color: var(--t-3); }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--t-3);
+}
+
+/* Scrollbars hidden inside artboards */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+/* Bg dotted texture */
+.bg-dots {
+  background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* keyframes */
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.04); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(2px, -3px); }
+}
+@keyframes typewriter-blink { 50% { opacity: 0; } }
+@keyframes ringPulse {
+  0% { transform: scale(0.9); opacity: 0.9; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes streamDots {
+  0%, 20% { opacity: 0.2; }
+  50% { opacity: 1; }
+  80%, 100% { opacity: 0.2; }
+}

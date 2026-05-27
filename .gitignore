@@ -1,0 +1,37 @@
+# ── Dependencies ──
+**/node_modules/
+.pnp
+.pnp.js
+
+# ── Next.js build output ──
+**/.next/
+**/out/
+**/build/
+
+# ── Env files (SECRETS — never commit) ──
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.local
+**/.env.*.local
+
+# ── Claude Code local state ──
+.claude/
+
+# ── TypeScript ──
+**/*.tsbuildinfo
+**/next-env.d.ts
+
+# ── OS / editor cruft ──
+.DS_Store
+Thumbs.db
+*.log
+
+# ── Internal docs / design artifacts (not shipped to the public repo) ──
+PROJECT_STATUS.md
+ZORA_DESIGN_PLAN.md
+SETUP_GUIDE.md
+E2E_TEST.md
+design_handoff_zora/
+zora-ss/

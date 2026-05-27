@@ -189,9 +189,3 @@ body {
   50% { opacity: 1; }
   80%, 100% { opacity: 0.2; }
 }
-@keyframes shootingStar {
-  0%   { transform: translate(0, 0) rotate(45deg); opacity: 0; }
-  12%  { opacity: 1; }
-  62%  { opacity: 1; }
-  100% { transform: translate(380px, 380px) rotate(45deg); opacity: 0; }
-}

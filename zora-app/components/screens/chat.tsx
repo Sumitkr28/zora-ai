@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { ZoraMark, Icon } from '../logo';
-import { signInWithGoogle } from '@/lib/auth';
+import { signInWithGoogle, signInWithGithub } from '@/lib/auth';
 
 interface Thread {
   id: string;
@@ -1123,6 +1123,19 @@ export function LoginRequiredModal({ onClose }: { onClose: () => void }) {
     setBusy(false);
   }
 
+  async function handleGithub() {
+    setNotice(null);
+    setBusy(true);
+    try {
+      await signInWithGithub();
+      onClose();
+    } catch {
+      setNotice("Couldn't sign in with GitHub. Try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function handleEmail() {
     onClose();
     if (typeof window !== 'undefined') window.location.href = '/login';
@@ -1217,6 +1230,19 @@ export function LoginRequiredModal({ onClose }: { onClose: () => void }) {
             }}
           >
             <Icon name="microsoft" size={16} /> Continue with Microsoft
+          </button>
+          <button
+            onClick={handleGithub}
+            disabled={busy}
+            className="btn"
+            style={{
+              width: '100%',
+              justifyContent: 'center',
+              opacity: busy ? 0.6 : 1,
+              cursor: busy ? 'wait' : 'pointer',
+            }}
+          >
+            <Icon name="github" size={16} /> Continue with GitHub
           </button>
           <button
             onClick={handleEmail}

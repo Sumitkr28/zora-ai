@@ -371,7 +371,7 @@ function ProfileSidebar({ active, onSignOut }: { active: string; onSignOut: () =
     { id: 'account', icon: 'user', label: 'Account', href: '/account' },
     { id: 'chats', icon: 'chat', label: 'Chats', href: '/chat' },
     { id: 'billing', icon: 'bolt', label: 'Billing', href: '/pricing' },
-    { id: 'privacy', icon: 'shield', label: 'Privacy', href: '/terms' },
+    { id: 'privacy', icon: 'shield', label: 'Privacy', href: '/privacy' },
     { id: 'about', icon: 'info', label: 'About Zora', href: '/about' },
     { id: 'contact', icon: 'mail', label: 'Contact', href: '/contact' },
   ];

@@ -3,6 +3,7 @@
 
 import {
   GoogleAuthProvider,
+  GithubAuthProvider,
   signInWithPopup,
   signInWithPhoneNumber,
   RecaptchaVerifier,
@@ -18,7 +19,7 @@ import { getFirebaseAuth, getDb } from './firebase';
 
 const EMAIL_FOR_SIGNIN_KEY = 'zora.emailForSignIn';
 
-export type AuthMethod = 'phone' | 'email' | 'google';
+export type AuthMethod = 'phone' | 'email' | 'google' | 'github';
 
 // ─────────────────────────────────────────────────────────────
 // Google
@@ -29,6 +30,18 @@ export async function signInWithGoogle(): Promise<User> {
   const provider = new GoogleAuthProvider();
   const result = await signInWithPopup(auth, provider);
   await ensureUserDoc(result.user, 'google');
+  return result.user;
+}
+
+// ─────────────────────────────────────────────────────────────
+// GitHub — OAuth popup (free, works on Spark)
+// ─────────────────────────────────────────────────────────────
+
+export async function signInWithGithub(): Promise<User> {
+  const auth = getFirebaseAuth();
+  const provider = new GithubAuthProvider();
+  const result = await signInWithPopup(auth, provider);
+  await ensureUserDoc(result.user, 'github');
   return result.user;
 }
 

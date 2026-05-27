@@ -14,6 +14,7 @@ import { ZoraMark, ZoraWordmark, Icon } from '../logo';
 import { useAuth } from '../AuthProvider';
 import {
   signInWithGoogle,
+  signInWithGithub,
   sendPhoneOtp,
   verifyPhoneOtp,
   sendEmailSignInLink,
@@ -240,6 +241,18 @@ export function LoginScreen({
     }
   }
 
+  async function handleGithub() {
+    setError(null);
+    setBusy(true);
+    try {
+      await signInWithGithub();
+    } catch (e) {
+      setError(humanizeError(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function handleBack() {
     setError(null);
     setOtp(['', '', '', '', '', '']);
@@ -311,6 +324,7 @@ export function LoginScreen({
                 onSendCode={handleSendCode}
                 onGoogle={handleGoogle}
                 onMicrosoft={handleMicrosoft}
+                onGithub={handleGithub}
                 emailOpen={emailOpen}
                 onEmailOpen={handleEmailOpen}
                 busy={busy}
@@ -475,6 +489,7 @@ function FormView({
   onSendCode,
   onGoogle,
   onMicrosoft,
+  onGithub,
   emailOpen,
   onEmailOpen,
   busy,
@@ -487,6 +502,7 @@ function FormView({
   onSendCode: () => void;
   onGoogle: () => void;
   onMicrosoft: () => void;
+  onGithub: () => void;
   emailOpen: boolean;
   onEmailOpen: () => void;
   busy: boolean;
@@ -596,6 +612,23 @@ function FormView({
         <Icon name="microsoft" size={16} /> Sign in with Microsoft
       </button>
 
+      <button
+        onClick={onGithub}
+        disabled={busy}
+        className="btn"
+        style={{
+          width: '100%',
+          justifyContent: 'center',
+          padding: 13,
+          fontSize: 14,
+          marginTop: 8,
+          opacity: busy ? 0.6 : 1,
+          cursor: busy ? 'wait' : 'pointer',
+        }}
+      >
+        <Icon name="github" size={16} /> Sign in with GitHub
+      </button>
+
       {emailOpen ? (
         <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
           <input
@@ -655,7 +688,7 @@ function FormView({
           Terms
         </a>{' '}
         and{' '}
-        <a href="/terms" style={{ color: 'var(--t-2)', textDecoration: 'underline' }}>
+        <a href="/privacy" style={{ color: 'var(--t-2)', textDecoration: 'underline' }}>
           Privacy policy
         </a>
         .

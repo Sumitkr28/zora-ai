@@ -896,6 +896,172 @@ export function TermsScreen({ width = 1280, height = 800 }: { width?: number | s
   );
 }
 
+export function PrivacyScreen({ width = 1280, height = 800 }: { width?: number | string; height?: number | string }) {
+  const sections = [
+    {
+      n: '01',
+      title: 'What we collect',
+      body:
+        "When you sign in with Google, GitHub, or an email link, we receive your name, email address, and profile photo from that provider. We store the chats you have with Zora, the files you attach, and anything you send through the contact form. In guest mode we collect nothing that persists.",
+    },
+    {
+      n: '02',
+      title: 'How we use it',
+      body:
+        "We use your data only to run Zora — to generate replies, save your chat history, show it back to you, and respond when you contact us. We do not sell your data, and we do not use your Pro or Max conversations to train models.",
+    },
+    {
+      n: '03',
+      title: 'Where your data lives',
+      body:
+        "Your account and chat history are stored in Google Firebase (Firestore). Your prompts and uploads are sent to the Google Gemini API to generate replies; uploaded files are held by Gemini's Files API only long enough to process your request (about 48 hours) and are then deleted. Contact-form messages are forwarded to our inbox through Web3Forms.",
+    },
+    {
+      n: '04',
+      title: 'Retention & deletion',
+      body:
+        'Chats saved to your account auto-delete 7 days after your last reply in that thread. Guest-mode chats are never stored — they disappear when you refresh or close the tab. Uploads are discarded shortly after processing. You can delete your account and its data at any time from your account page.',
+    },
+    {
+      n: '05',
+      title: 'On-device storage',
+      body:
+        "Zora uses your browser's local and session storage to keep you signed in and to keep your current chat alive across reloads and navigation. We do not use third-party advertising or tracking cookies.",
+    },
+    {
+      n: '06',
+      title: 'Your rights',
+      body:
+        'You can access, export, or delete your data at any time. Manage it from your account page, or email us and we will help. We respond to privacy requests within 30 days.',
+    },
+    {
+      n: '07',
+      title: "Children's privacy",
+      body:
+        'Zora is not directed at children under 13 (or the minimum age required in your country). We do not knowingly collect personal data from children. If you believe a child has used Zora, contact us and we will remove the data.',
+    },
+    {
+      n: '08',
+      title: 'Changes',
+      body:
+        'We may update this policy. Material changes will be announced at least 14 days in advance via email and an in-product banner.',
+    },
+  ];
+
+  return (
+    <div
+      style={{
+        width,
+        height,
+        background: 'var(--bg-0)',
+        color: 'var(--t-1)',
+        overflow: 'auto',
+        position: 'relative',
+      }}
+      className="no-scrollbar"
+    >
+      <LandingNav />
+
+      <div style={{ maxWidth: 880, margin: '0 auto', padding: '48px 56px' }}>
+        <div className="eyebrow" style={{ marginBottom: 16 }}>
+          LEGAL
+        </div>
+        <h1
+          style={{
+            margin: 0,
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontWeight: 500,
+            fontSize: 60,
+            letterSpacing: '-0.035em',
+            marginBottom: 12,
+          }}
+        >
+          Privacy policy
+        </h1>
+        <div
+          style={{
+            display: 'flex',
+            gap: 16,
+            marginBottom: 40,
+            alignItems: 'center',
+            fontSize: 12,
+            color: 'var(--t-3)',
+          }}
+        >
+          <span className="mono">Last updated: May 27, 2026</span>
+          <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--t-4)' }} />
+          <span className="mono">v1.0</span>
+        </div>
+
+        <div
+          style={{
+            background: 'var(--bg-1)',
+            border: '1px solid var(--bd-2)',
+            borderRadius: 14,
+            padding: 22,
+            marginBottom: 36,
+            display: 'flex',
+            gap: 16,
+            alignItems: 'flex-start',
+          }}
+        >
+          <Icon name="info" size={20} color="#c8ccd2" />
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 6 }}>The plain-language version</div>
+            <p style={{ margin: 0, fontSize: 13, color: 'var(--t-3)', lineHeight: 1.6 }}>
+              We collect what we need to run Zora — your sign-in details, your chats, and anything you upload.
+              Your chats auto-delete after 7 days. Guest chats are never saved. We don&apos;t sell your data or
+              train on your Pro/Max conversations. Delete everything any time from your account.
+            </p>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, marginBottom: 48 }}>
+          {sections.map((s) => (
+            <div
+              key={s.n}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '60px 1fr',
+                gap: 24,
+                paddingBottom: 24,
+                borderBottom: '1px solid var(--bd-1)',
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 11,
+                  color: 'var(--t-4)',
+                  letterSpacing: '0.2em',
+                }}
+              >
+                {s.n}
+              </div>
+              <div>
+                <div
+                  style={{
+                    fontSize: 20,
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontWeight: 500,
+                    letterSpacing: '-0.02em',
+                    marginBottom: 8,
+                  }}
+                >
+                  {s.title}
+                </div>
+                <p style={{ margin: 0, fontSize: 14, color: 'var(--t-2)', lineHeight: 1.65 }}>{s.body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <SiteFooter />
+      </div>
+    </div>
+  );
+}
+
 export function PricingScreen({ width = 1280, height = 800 }: { width?: number | string; height?: number | string }) {
   const plans = [
     {
@@ -1270,7 +1436,7 @@ export function SiteFooter() {
         title="Legal"
         links={[
           ['Terms', '/terms'],
-          ['Privacy', '/terms'],
+          ['Privacy', '/privacy'],
           ['Data deletion', '/account'],
         ]}
       />

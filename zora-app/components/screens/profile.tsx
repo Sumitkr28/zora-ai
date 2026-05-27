@@ -45,6 +45,7 @@ export function ProfileScreen({ width = 1280, height = 800 }: { width?: number |
   const { user, loading, signOut } = useAuth();
   const [userDoc, setUserDoc] = React.useState<UserDoc | null>(null);
   const [chatCount, setChatCount] = React.useState<number | null>(null);
+  const [imgError, setImgError] = React.useState(false);
 
   React.useEffect(() => {
     if (!user) {
@@ -184,10 +185,12 @@ export function ProfileScreen({ width = 1280, height = 800 }: { width?: number |
           }}
         >
           <div style={{ position: 'relative' }}>
-            {photoURL ? (
+            {photoURL && !imgError ? (
               <img
                 src={photoURL}
                 alt={displayName}
+                referrerPolicy="no-referrer"
+                onError={() => setImgError(true)}
                 style={{
                   width: 160,
                   height: 160,

@@ -48,6 +48,7 @@ export function Landing({ width = 1280, height = 800 }: { width?: number | strin
             pointerEvents: 'none',
           }}
         />
+        <ShootingStars />
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
           <div
             style={{
@@ -223,6 +224,37 @@ export function LandingNav() {
           Open Zora →
         </Link>
       </div>
+    </div>
+  );
+}
+
+function ShootingStars() {
+  const stars = [
+    { top: '6%', left: '8%', delay: '0s', dur: '3.4s' },
+    { top: '2%', left: '36%', delay: '1.9s', dur: '3s' },
+    { top: '24%', left: '3%', delay: '3.3s', dur: '3.9s' },
+    { top: '13%', left: '52%', delay: '4.8s', dur: '2.9s' },
+    { top: '32%', left: '22%', delay: '6.2s', dur: '3.3s' },
+  ];
+  return (
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
+      {stars.map((s, i) => (
+        <span
+          key={i}
+          style={{
+            position: 'absolute',
+            top: s.top,
+            left: s.left,
+            width: 130,
+            height: 2,
+            background: 'linear-gradient(90deg, rgba(232,234,238,0) 0%, rgba(232,234,238,0.9) 100%)',
+            borderRadius: 2,
+            filter: 'drop-shadow(0 0 6px rgba(200,204,210,0.55))',
+            opacity: 0,
+            animation: `shootingStar ${s.dur} ease-in ${s.delay} infinite`,
+          }}
+        />
+      ))}
     </div>
   );
 }

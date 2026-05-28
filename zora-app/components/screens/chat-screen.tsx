@@ -13,7 +13,10 @@
 import React from 'react';
 import { ZoraMark, Icon } from '../logo';
 import { LoginRequiredModal } from './chat';
+import { MarkdownMessage } from '../markdown';
 import { useAuth } from '../AuthProvider';
+import { useIsMobile } from '../useIsMobile';
+import { MobileDrawer } from '../mobile-drawer';
 import {
   listConversations,
   loadMessages,
@@ -107,6 +110,8 @@ export function ChatScreen() {
   const [pendingAttachment, setPendingAttachment] = React.useState<PendingAttachment | null>(null);
   const [showUploadModal, setShowUploadModal] = React.useState(false);
   const [uploadError, setUploadError] = React.useState<string | null>(null);
+  const isMobile = useIsMobile();
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
   const abortRef = React.useRef<AbortController | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const composerRef = React.useRef<HTMLTextAreaElement>(null);
@@ -472,6 +477,30 @@ export function ChatScreen() {
     return <div style={{ width: '100%', height: '100%', background: 'var(--bg-0)' }} />;
   }
 
+  // Drawer-aware wrappers — on mobile, picking a conversation or starting a new chat
+  // should close the slide-in sidebar so the chat is visible again.
+  const handleSelectFromSidebar = (id: string) => {
+    if (isMobile) setDrawerOpen(false);
+    handleSwitchConversation(id);
+  };
+  const handleNewFromSidebar = () => {
+    if (isMobile) setDrawerOpen(false);
+    handleNewChat();
+  };
+
+  const sidebar = (
+    <Sidebar
+      loggedIn={loggedIn}
+      userInitials={initialsFromUser(user)}
+      userName={displayNameFromUser(user)}
+      conversations={conversations}
+      activeId={activeConvId}
+      onSelect={handleSelectFromSidebar}
+      onNew={handleNewFromSidebar}
+      onDelete={handleDeleteConversation}
+    />
+  );
+
   return (
     <div
       style={{
@@ -480,32 +509,34 @@ export function ChatScreen() {
         background: 'var(--bg-0)',
         color: 'var(--t-1)',
         display: 'grid',
-        gridTemplateColumns: '280px 1fr',
+        gridTemplateColumns: isMobile ? '1fr' : '280px 1fr',
         overflow: 'hidden',
         position: 'relative',
       }}
     >
-      <Sidebar
-        loggedIn={loggedIn}
-        userInitials={initialsFromUser(user)}
-        userName={displayNameFromUser(user)}
-        conversations={conversations}
-        activeId={activeConvId}
-        onSelect={handleSwitchConversation}
-        onNew={handleNewChat}
-        onDelete={handleDeleteConversation}
-      />
+      {isMobile ? (
+        <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+          {sidebar}
+        </MobileDrawer>
+      ) : (
+        sidebar
+      )}
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-        <TopBar loggedIn={loggedIn} model={model} />
+        <TopBar
+          loggedIn={loggedIn}
+          model={model}
+          isMobile={isMobile}
+          onMenuClick={() => setDrawerOpen(true)}
+        />
         <div
           ref={threadScrollRef}
           style={{ flex: 1, overflowY: 'auto', padding: '32px 0 16px' }}
           className="no-scrollbar"
         >
           {messages.length === 0 ? (
-            <EmptyState onPick={handleSuggestionClick} />
+            <EmptyState onPick={handleSuggestionClick} isMobile={isMobile} />
           ) : (
-            <Thread messages={messages} />
+            <Thread messages={messages} isMobile={isMobile} />
           )}
         </div>
         <Composer
@@ -520,6 +551,7 @@ export function ChatScreen() {
           uploadError={uploadError}
           loggedIn={loggedIn}
           textareaRef={composerRef}
+          isMobile={isMobile}
         />
       </div>
 
@@ -844,21 +876,42 @@ function ConvRow({
 function TopBar({
   loggedIn,
   model,
+  isMobile,
+  onMenuClick,
 }: {
   loggedIn: boolean;
   model: ModelTier;
+  isMobile: boolean;
+  onMenuClick: () => void;
 }) {
   return (
     <div
       style={{
-        padding: '14px 28px',
+        padding: isMobile ? '12px 14px' : '14px 28px',
         borderBottom: '1px solid var(--bd-1)',
         display: 'flex',
         alignItems: 'center',
-        gap: 16,
+        gap: isMobile ? 10 : 16,
         background: 'var(--bg-0)',
       }}
     >
+      {isMobile && (
+        <button
+          onClick={onMenuClick}
+          aria-label="Open menu"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 6,
+            color: 'var(--t-2)',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Icon name="menu" size={20} />
+        </button>
+      )}
       <div
         title="Your current model. Upgrade your plan to unlock Pro or Max."
         style={{
@@ -868,7 +921,7 @@ function TopBar({
           background: 'var(--bg-2)',
           border: '1px solid var(--bd-2)',
           borderRadius: 8,
-          padding: '7px 14px',
+          padding: isMobile ? '6px 10px' : '7px 14px',
           fontSize: 12,
           color: 'var(--t-1)',
         }}
@@ -883,7 +936,9 @@ function TopBar({
           }}
         />
         Zora {model}
-        <span style={{ fontSize: 10, color: 'var(--t-3)', marginLeft: 2 }}>· {MODEL_DESC[model]}</span>
+        {!isMobile && (
+          <span style={{ fontSize: 10, color: 'var(--t-3)', marginLeft: 2 }}>· {MODEL_DESC[model]}</span>
+        )}
         <a
           href="/pricing"
           style={{
@@ -902,7 +957,7 @@ function TopBar({
         </a>
       </div>
       <div style={{ flex: 1 }} />
-      {!loggedIn && (
+      {!loggedIn && !isMobile && (
         <div
           style={{
             fontSize: 11,
@@ -938,7 +993,7 @@ function TopBar({
   );
 }
 
-function EmptyState({ onPick }: { onPick: (prompt: string) => void }) {
+function EmptyState({ onPick, isMobile }: { onPick: (prompt: string) => void; isMobile: boolean }) {
   return (
     <div
       style={{
@@ -947,34 +1002,34 @@ function EmptyState({ onPick }: { onPick: (prompt: string) => void }) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 32,
+        padding: isMobile ? '24px 18px' : 32,
       }}
     >
-      <div style={{ filter: 'drop-shadow(0 8px 40px rgba(200,204,210,0.25))', marginBottom: 28 }}>
-        <ZoraMark size={72} />
+      <div style={{ filter: 'drop-shadow(0 8px 40px rgba(200,204,210,0.25))', marginBottom: isMobile ? 18 : 28 }}>
+        <ZoraMark size={isMobile ? 56 : 72} />
       </div>
       <h1
         style={{
           margin: 0,
           fontFamily: "'Space Grotesk', sans-serif",
           fontWeight: 500,
-          fontSize: 38,
+          fontSize: isMobile ? 26 : 38,
           letterSpacing: '-0.03em',
           textAlign: 'center',
         }}
       >
         How can I help you today?
       </h1>
-      <p style={{ marginTop: 8, fontSize: 14, color: 'var(--t-3)' }}>
+      <p style={{ marginTop: 8, fontSize: isMobile ? 13 : 14, color: 'var(--t-3)', textAlign: 'center' }}>
         Ask anything, drop a file, or pick a suggestion below.
       </p>
 
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
           gap: 10,
-          marginTop: 32,
+          marginTop: isMobile ? 22 : 32,
           maxWidth: 720,
           width: '100%',
         }}
@@ -1019,16 +1074,16 @@ function EmptyState({ onPick }: { onPick: (prompt: string) => void }) {
   );
 }
 
-function Thread({ messages }: { messages: Message[] }) {
+function Thread({ messages, isMobile }: { messages: Message[]; isMobile: boolean }) {
   return (
     <div
       style={{
         maxWidth: 760,
         margin: '0 auto',
-        padding: '0 28px',
+        padding: isMobile ? '0 14px' : '0 28px',
         display: 'flex',
         flexDirection: 'column',
-        gap: 32,
+        gap: isMobile ? 24 : 32,
       }}
     >
       {messages.map((m) =>
@@ -1117,9 +1172,11 @@ function ZoraBubble({ msg }: { msg: Message }) {
             </span>
           )}
         </div>
-        <div style={{ fontSize: 14, color: 'var(--t-2)', lineHeight: 1.65, whiteSpace: 'pre-wrap' }}>
-          {msg.content || (msg.streaming ? <span style={{ color: 'var(--t-4)' }}>…</span> : '')}
-          {msg.streaming && (
+        {/* While streaming, show raw text + a live cursor (cheap, no half-fence flicker).
+            Once complete, render formatted Markdown. */}
+        {msg.streaming ? (
+          <div style={{ fontSize: 14, color: 'var(--t-2)', lineHeight: 1.65, whiteSpace: 'pre-wrap' }}>
+            {msg.content || <span style={{ color: 'var(--t-4)' }}>…</span>}
             <span
               style={{
                 display: 'inline-block',
@@ -1131,8 +1188,10 @@ function ZoraBubble({ msg }: { msg: Message }) {
                 animation: 'typewriter-blink 0.6s steps(1) infinite',
               }}
             />
-          )}
-        </div>
+          </div>
+        ) : msg.content ? (
+          <MarkdownMessage content={msg.content} />
+        ) : null}
         {!msg.streaming && msg.content && (
           <div style={{ display: 'flex', gap: 4, marginTop: 10, color: 'var(--t-3)' }}>
             <button
@@ -1217,6 +1276,7 @@ function Composer({
   uploadError,
   loggedIn,
   textareaRef,
+  isMobile,
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -1229,6 +1289,7 @@ function Composer({
   uploadError: string | null;
   loggedIn: boolean;
   textareaRef: React.RefObject<HTMLTextAreaElement>;
+  isMobile: boolean;
 }) {
   const [addMenuOpen, setAddMenuOpen] = React.useState(false);
   const addMenuRef = React.useRef<HTMLDivElement | null>(null);
@@ -1260,7 +1321,15 @@ function Composer({
   const sendDisabled = !streaming && !value.trim() && !pendingAttachment;
 
   return (
-    <div style={{ padding: '14px 28px 22px', borderTop: '1px solid var(--bd-1)', background: 'var(--bg-0)' }}>
+    <div
+      style={{
+        padding: isMobile
+          ? '10px 12px calc(14px + env(safe-area-inset-bottom, 0px))'
+          : '14px 28px 22px',
+        borderTop: '1px solid var(--bd-1)',
+        background: 'var(--bg-0)',
+      }}
+    >
       <div style={{ maxWidth: 760, margin: '0 auto' }}>
         {pendingAttachment && (
           <div

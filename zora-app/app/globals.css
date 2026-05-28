@@ -56,7 +56,13 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
+html, body {
+  margin: 0;
+  padding: 0;
+  /* Prevent any rogue mobile element from causing a horizontal scrollbar. */
+  overflow-x: hidden;
+  max-width: 100vw;
+}
 body {
   font-family: var(--font-sans);
   color: var(--t-1);
@@ -189,3 +195,38 @@ body {
   50% { opacity: 1; }
   80%, 100% { opacity: 0.2; }
 }
+
+/* Markdown replies (assistant) — scoped under .zora-md so nothing leaks elsewhere.
+   Strip the trailing block margin so the Copy button doesn't get an extra gap. */
+.zora-md > *:last-child { margin-bottom: 0; }
+.zora-md :not(pre) > code { word-break: break-word; }
+
+/* highlight.js token theme — muted brushed-steel palette + brand green for strings. */
+.zora-md .hljs { color: var(--t-2); background: transparent; }
+.zora-md .hljs-comment,
+.zora-md .hljs-quote { color: var(--t-4); font-style: italic; }
+.zora-md .hljs-keyword,
+.zora-md .hljs-selector-tag,
+.zora-md .hljs-literal,
+.zora-md .hljs-doctag { color: var(--steel-200); }
+.zora-md .hljs-string,
+.zora-md .hljs-regexp,
+.zora-md .hljs-addition { color: #28c840; }
+.zora-md .hljs-number,
+.zora-md .hljs-built_in,
+.zora-md .hljs-type,
+.zora-md .hljs-symbol { color: var(--steel-300); }
+.zora-md .hljs-title,
+.zora-md .hljs-title.function_,
+.zora-md .hljs-title.class_,
+.zora-md .hljs-section { color: var(--t-1); font-weight: 600; }
+.zora-md .hljs-attr,
+.zora-md .hljs-attribute,
+.zora-md .hljs-variable,
+.zora-md .hljs-params,
+.zora-md .hljs-template-variable { color: var(--t-2); }
+.zora-md .hljs-meta,
+.zora-md .hljs-tag { color: var(--steel-400); }
+.zora-md .hljs-deletion { color: #d97064; }
+.zora-md .hljs-emphasis { font-style: italic; }
+.zora-md .hljs-strong { font-weight: 600; }

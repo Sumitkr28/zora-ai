@@ -11,11 +11,16 @@ import {
   isSignInWithEmailLink,
   signInWithEmailLink,
   signOut,
+  updateProfile,
+  reauthenticateWithPopup,
+  deleteUser,
+  type AuthProvider,
   type ConfirmationResult,
   type User,
 } from 'firebase/auth';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { getFirebaseAuth, getDb } from './firebase';
+import { deleteAllUserData } from './account';
 
 const EMAIL_FOR_SIGNIN_KEY = 'zora.emailForSignIn';
 
@@ -136,6 +141,58 @@ export async function completeEmailLinkSignIn(): Promise<User | null> {
 
 export async function signOutUser(): Promise<void> {
   await signOut(getFirebaseAuth());
+}
+
+// ─────────────────────────────────────────────────────────────
+// Profile: update display name
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Update the signed-in user's display name in both Firebase Auth and the
+ * /users/{uid} Firestore doc. Throws if there's no current user.
+ */
+export async function updateDisplayName(name: string): Promise<void> {
+  const auth = getFirebaseAuth();
+  const user = auth.currentUser;
+  if (!user) throw new Error('Not signed in');
+  const trimmed = name.trim();
+  if (!trimmed) throw new Error('Name cannot be empty');
+  await updateProfile(user, { displayName: trimmed });
+  await updateDoc(doc(getDb(), 'users', user.uid), { displayName: trimmed });
+}
+
+// ─────────────────────────────────────────────────────────────
+// Account deletion (cascade Firestore data, then the Auth user)
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Permanently delete the signed-in user: re-authenticate (for OAuth providers, via
+ * popup), cascade-delete their Firestore data, then delete the Auth user itself.
+ *
+ * For email-link / phone users we can't silently re-auth, so we skip the popup and rely
+ * on a recent login — if it's too old, deleteUser throws `auth/requires-recent-login`,
+ * which the caller surfaces as a "sign out and back in" message.
+ */
+export async function deleteAccount(): Promise<void> {
+  const auth = getFirebaseAuth();
+  const user = auth.currentUser;
+  if (!user) throw new Error('Not signed in');
+
+  const providerId = user.providerData[0]?.providerId;
+  const reauthProvider: AuthProvider | null =
+    providerId === 'google.com'
+      ? new GoogleAuthProvider()
+      : providerId === 'github.com'
+        ? new GithubAuthProvider()
+        : null;
+
+  if (reauthProvider) {
+    await reauthenticateWithPopup(user, reauthProvider);
+  }
+
+  // Delete data first (still authenticated), then the Auth user.
+  await deleteAllUserData(user.uid);
+  await deleteUser(user);
 }
 
 // ─────────────────────────────────────────────────────────────

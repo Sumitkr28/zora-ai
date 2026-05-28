@@ -8,8 +8,11 @@ import Link from 'next/link';
 import { ZoraMark, ZoraWordmark, Icon } from '../logo';
 import { SiteFooter } from './about-contact-terms';
 import { useAuth } from '../AuthProvider';
+import { useIsMobile } from '../useIsMobile';
+import { MobileDrawer } from '../mobile-drawer';
 
 export function Landing({ width = 1280, height = 800 }: { width?: number | string; height?: number | string }) {
+  const isMobile = useIsMobile();
   return (
     <div
       style={{
@@ -30,9 +33,9 @@ export function Landing({ width = 1280, height = 800 }: { width?: number | strin
         style={{
           flex: 1,
           display: 'grid',
-          gridTemplateColumns: '1.1fr 1fr',
-          gap: 32,
-          padding: '32px 64px 0',
+          gridTemplateColumns: isMobile ? '1fr' : '1.1fr 1fr',
+          gap: isMobile ? 0 : 32,
+          padding: isMobile ? '20px 20px 0' : '32px 64px 0',
           position: 'relative',
         }}
       >
@@ -48,7 +51,31 @@ export function Landing({ width = 1280, height = 800 }: { width?: number | strin
             pointerEvents: 'none',
           }}
         />
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: isMobile ? 'center' : 'flex-start',
+            textAlign: isMobile ? 'center' : 'left',
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
+          {isMobile && (
+            <div style={{ position: 'relative', marginTop: 12, marginBottom: 18 }}>
+              <ZoraMark size={88} />
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: -14,
+                  border: '1px dashed rgba(200,204,210,0.2)',
+                  borderRadius: '50%',
+                  animation: 'spin-slow 30s linear infinite',
+                }}
+              />
+            </div>
+          )}
           <div
             style={{
               display: 'inline-flex',
@@ -64,7 +91,7 @@ export function Landing({ width = 1280, height = 800 }: { width?: number | strin
               color: 'var(--t-2)',
               width: 'max-content',
               textTransform: 'uppercase',
-              marginBottom: 28,
+              marginBottom: isMobile ? 18 : 28,
             }}
           >
             <span
@@ -84,8 +111,8 @@ export function Landing({ width = 1280, height = 800 }: { width?: number | strin
               margin: 0,
               fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 500,
-              fontSize: 78,
-              lineHeight: 1.02,
+              fontSize: isMobile ? 42 : 78,
+              lineHeight: 1.04,
               letterSpacing: '-0.035em',
               color: 'var(--t-1)',
             }}
@@ -104,14 +131,35 @@ export function Landing({ width = 1280, height = 800 }: { width?: number | strin
               beyond chat.
             </span>
           </h1>
-          <p style={{ marginTop: 24, maxWidth: 480, fontSize: 17, lineHeight: 1.55, color: 'var(--t-2)' }}>
+          <p
+            style={{
+              marginTop: isMobile ? 16 : 24,
+              maxWidth: 480,
+              fontSize: isMobile ? 14 : 17,
+              lineHeight: 1.55,
+              color: 'var(--t-2)',
+            }}
+          >
             Meet <strong style={{ color: 'var(--t-1)', fontWeight: 600 }}>Zora</strong> — Xorvion&apos;s flagship assistant for thinking, building, and shipping. Upload anything, reason through anything, and pick up where you left off.
           </p>
-          <div style={{ display: 'flex', gap: 12, marginTop: 36 }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: isMobile ? 10 : 12,
+              marginTop: isMobile ? 22 : 36,
+              flexDirection: isMobile ? 'column' : 'row',
+              width: isMobile ? '100%' : 'auto',
+            }}
+          >
             <Link
               href="/chat"
               className="btn primary"
-              style={{ fontSize: 15, padding: '14px 22px', textDecoration: 'none' }}
+              style={{
+                fontSize: 15,
+                padding: isMobile ? '14px 22px' : '14px 22px',
+                textDecoration: 'none',
+                justifyContent: 'center',
+              }}
             >
               Start chatting free
               <Icon name="arrow" size={16} color="#0a0a0a" />
@@ -119,19 +167,26 @@ export function Landing({ width = 1280, height = 800 }: { width?: number | strin
             <Link
               href="/?intro=1"
               className="btn ghost"
-              style={{ fontSize: 15, padding: '14px 22px', textDecoration: 'none' }}
+              style={{
+                fontSize: 15,
+                padding: '14px 22px',
+                textDecoration: 'none',
+                justifyContent: 'center',
+              }}
             >
               <Icon name="play" size={14} /> Watch the intro
             </Link>
           </div>
           <div
             style={{
-              display: 'flex',
-              gap: 24,
-              marginTop: 24,
+              display: isMobile ? 'grid' : 'flex',
+              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : undefined,
+              gap: isMobile ? 16 : 24,
+              marginTop: isMobile ? 22 : 24,
               paddingTop: 16,
               borderTop: '1px solid var(--bd-1)',
               maxWidth: 520,
+              width: isMobile ? '100%' : undefined,
             }}
           >
             {([
@@ -141,7 +196,7 @@ export function Landing({ width = 1280, height = 800 }: { width?: number | strin
               ['<300ms', 'first token'],
             ] as const).map(([n, l]) => (
               <div key={l}>
-                <div className="mono" style={{ fontSize: 22, color: 'var(--t-1)', fontWeight: 500 }}>
+                <div className="mono" style={{ fontSize: isMobile ? 18 : 22, color: 'var(--t-1)', fontWeight: 500 }}>
                   {n}
                 </div>
                 <div
@@ -159,10 +214,10 @@ export function Landing({ width = 1280, height = 800 }: { width?: number | strin
             ))}
           </div>
         </div>
-        <HeroPreview />
+        {!isMobile && <HeroPreview />}
       </div>
       <FeatureStrip />
-      <div style={{ padding: '32px 64px 0' }}>
+      <div style={{ padding: isMobile ? '24px 18px 0' : '32px 64px 0' }}>
         <SiteFooter />
       </div>
     </div>
@@ -172,10 +227,20 @@ export function Landing({ width = 1280, height = 800 }: { width?: number | strin
 export function LandingNav() {
   const { user } = useAuth();
   const loggedIn = !!user;
+  const isMobile = useIsMobile();
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  const navLinks: ReadonlyArray<readonly [string, string]> = [
+    ['Product', '/chat'],
+    ['About', '/about'],
+    ['Pricing', '/pricing'],
+    ['Contact', '/contact'],
+  ];
+
   return (
     <div
       style={{
-        padding: '20px 64px',
+        padding: isMobile ? '14px 18px' : '20px 64px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -185,44 +250,120 @@ export function LandingNav() {
       }}
     >
       <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-        <ZoraWordmark size={20} tagline />
+        <ZoraWordmark size={isMobile ? 14 : 20} tagline />
       </Link>
-      <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
-        {(
-          [
-            ['Product', '/chat'],
-            ['About', '/about'],
-            ['Pricing', '/pricing'],
-            ['Contact', '/contact'],
-          ] as const
-        ).map(([label, href]) => (
+
+      {!isMobile && (
+        <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
+          {navLinks.map(([label, href]) => (
+            <Link
+              key={label}
+              href={href}
+              style={{ color: 'var(--t-2)', fontSize: 14, cursor: 'pointer', textDecoration: 'none' }}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {!isMobile && (
+        <div style={{ display: 'flex', gap: 10 }}>
+          {!loggedIn && (
+            <Link
+              href="/login"
+              className="btn ghost"
+              style={{ fontSize: 13, padding: '8px 14px', textDecoration: 'none' }}
+            >
+              Log in
+            </Link>
+          )}
           <Link
-            key={label}
-            href={href}
-            style={{ color: 'var(--t-2)', fontSize: 14, cursor: 'pointer', textDecoration: 'none' }}
+            href="/chat"
+            className="btn primary"
+            style={{ fontSize: 13, padding: '8px 16px', textDecoration: 'none' }}
           >
-            {label}
+            Open Zora →
           </Link>
-        ))}
-      </div>
-      <div style={{ display: 'flex', gap: 10 }}>
-        {!loggedIn && (
-          <Link
-            href="/login"
-            className="btn ghost"
-            style={{ fontSize: 13, padding: '8px 14px', textDecoration: 'none' }}
+        </div>
+      )}
+
+      {isMobile && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {!loggedIn && (
+            <Link
+              href="/login"
+              className="btn ghost"
+              style={{ fontSize: 12, padding: '6px 12px', textDecoration: 'none' }}
+            >
+              Log in
+            </Link>
+          )}
+          <button
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
+            style={{
+              background: 'var(--bg-2)',
+              border: '1px solid var(--bd-2)',
+              borderRadius: 8,
+              cursor: 'pointer',
+              padding: 8,
+              color: 'var(--t-2)',
+              display: 'flex',
+              alignItems: 'center',
+            }}
           >
-            Log in
-          </Link>
-        )}
-        <Link
-          href="/chat"
-          className="btn primary"
-          style={{ fontSize: 13, padding: '8px 16px', textDecoration: 'none' }}
-        >
-          Open Zora →
-        </Link>
-      </div>
+            <Icon name="menu" size={18} />
+          </button>
+        </div>
+      )}
+
+      {isMobile && (
+        <MobileDrawer open={menuOpen} onClose={() => setMenuOpen(false)}>
+          <div style={{ padding: '20px 18px', borderBottom: '1px solid var(--bd-1)' }}>
+            <ZoraWordmark size={16} tagline />
+          </div>
+          <div style={{ padding: '14px 8px', display: 'flex', flexDirection: 'column' }}>
+            {navLinks.map(([label, href]) => (
+              <Link
+                key={label}
+                href={href}
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  color: 'var(--t-1)',
+                  fontSize: 15,
+                  padding: '11px 14px',
+                  borderRadius: 8,
+                  textDecoration: 'none',
+                }}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+          <div style={{ flex: 1 }} />
+          <div style={{ padding: '14px 14px 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {!loggedIn && (
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="btn ghost"
+                style={{ fontSize: 14, padding: '12px 16px', textDecoration: 'none', justifyContent: 'center' }}
+              >
+                Log in
+              </Link>
+            )}
+            <Link
+              href="/chat"
+              onClick={() => setMenuOpen(false)}
+              className="btn primary"
+              style={{ fontSize: 14, padding: '12px 16px', textDecoration: 'none', justifyContent: 'center' }}
+            >
+              Open Zora →
+            </Link>
+          </div>
+        </MobileDrawer>
+      )}
     </div>
   );
 }
@@ -351,6 +492,7 @@ function HeroPreview() {
 }
 
 export function FeatureStrip() {
+  const isMobile = useIsMobile();
   const features = [
     { icon: 'bolt', label: 'Streaming reasoning', sub: 'See thoughts as they form' },
     { icon: 'image', label: 'Multimodal input', sub: 'Images · PDFs · audio · code' },
@@ -361,10 +503,10 @@ export function FeatureStrip() {
     <div
       style={{
         borderTop: '1px solid var(--bd-1)',
-        padding: '24px 64px',
+        padding: isMobile ? '20px 18px' : '24px 64px',
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: 24,
+        gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
+        gap: isMobile ? 14 : 24,
         background: 'linear-gradient(180deg, transparent, rgba(255,255,255,0.015))',
       }}
     >

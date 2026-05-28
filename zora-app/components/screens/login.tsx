@@ -12,6 +12,7 @@ import React from 'react';
 import type { ConfirmationResult, RecaptchaVerifier } from 'firebase/auth';
 import { ZoraMark, ZoraWordmark, Icon } from '../logo';
 import { useAuth } from '../AuthProvider';
+import { useIsMobile } from '../useIsMobile';
 import {
   signInWithGoogle,
   signInWithGithub,
@@ -117,6 +118,7 @@ export function LoginScreen({
   const [countryIso, setCountryIso] = React.useState('US');
   const [emailOpen, setEmailOpen] = React.useState(false);
   const recaptchaRef = React.useRef<RecaptchaVerifier | null>(null);
+  const isMobile = useIsMobile();
 
   // Resend countdown for OTP / email link
   React.useEffect(() => {
@@ -267,23 +269,35 @@ export function LoginScreen({
         height,
         background: 'var(--bg-0)',
         display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
+        gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
         overflow: 'hidden',
         color: 'var(--t-1)',
       }}
     >
-      <BrandPanel />
+      {!isMobile && <BrandPanel />}
 
       <div
         style={{
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
-          padding: '40px 56px 24px',
+          padding: isMobile ? '14px 18px 24px' : '40px 56px 24px',
           overflowY: 'auto',
         }}
         className="no-scrollbar"
       >
+        {isMobile && (
+          <div style={{ marginBottom: 14 }}>
+            <a
+              href="/"
+              aria-label="Zora home"
+              title="Zora — home"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              <ZoraWordmark size={14} tagline />
+            </a>
+          </div>
+        )}
         {view !== 'form' && view !== 'done' && (
           <div style={{ marginBottom: 32 }}>
             <button
@@ -508,8 +522,14 @@ function FormView({
   busy: boolean;
   error: string | null;
 }) {
+  const isMobile = useIsMobile();
   return (
     <div>
+      {isMobile && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24, marginBottom: 28 }}>
+          <ZoraMark size={120} />
+        </div>
+      )}
       <div
         className="eyebrow"
         style={{ marginBottom: 12, color: 'var(--t-4)' }}
@@ -521,7 +541,7 @@ function FormView({
           margin: 0,
           fontFamily: "'Space Grotesk', sans-serif",
           fontWeight: 500,
-          fontSize: 36,
+          fontSize: isMobile ? 26 : 36,
           letterSpacing: '-0.03em',
           color: 'var(--t-1)',
           marginBottom: 8,

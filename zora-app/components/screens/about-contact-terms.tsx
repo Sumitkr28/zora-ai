@@ -8,8 +8,10 @@ import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { getDb } from '@/lib/firebase';
 import { ZoraMark, ZoraWordmark, Icon } from '../logo';
 import { LandingNav } from './landing';
+import { useIsMobile } from '../useIsMobile';
 
 export function AboutScreen({ width = 1280, height = 800 }: { width?: number | string; height?: number | string }) {
+  const isMobile = useIsMobile();
   return (
     <div
       style={{
@@ -24,7 +26,7 @@ export function AboutScreen({ width = 1280, height = 800 }: { width?: number | s
     >
       <LandingNav />
 
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 56px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: isMobile ? '28px 18px' : '48px 56px' }}>
         <div className="eyebrow" style={{ marginBottom: 16 }}>
           ABOUT
         </div>
@@ -33,7 +35,7 @@ export function AboutScreen({ width = 1280, height = 800 }: { width?: number | s
             margin: 0,
             fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 500,
-            fontSize: 64,
+            fontSize: isMobile ? 36 : 64,
             letterSpacing: '-0.035em',
             lineHeight: 1.05,
             marginBottom: 24,
@@ -58,13 +60,13 @@ export function AboutScreen({ width = 1280, height = 800 }: { width?: number | s
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '1.4fr 1fr',
-            gap: 48,
-            marginBottom: 56,
+            gridTemplateColumns: isMobile ? '1fr' : '1.4fr 1fr',
+            gap: isMobile ? 24 : 48,
+            marginBottom: 40,
             alignItems: 'start',
           }}
         >
-          <div style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--t-2)' }}>
+          <div style={{ fontSize: isMobile ? 14 : 16, lineHeight: 1.7, color: 'var(--t-2)' }}>
             <p style={{ marginTop: 0 }}>
               Zora is Xorvion&apos;s flagship assistant. We started with one question:{' '}
               <em style={{ color: 'var(--t-1)' }}>why does most AI feel like a search bar with manners?</em> We
@@ -147,7 +149,7 @@ export function AboutScreen({ width = 1280, height = 800 }: { width?: number | s
         <div className="eyebrow" style={{ marginBottom: 18 }}>
           OUR PRINCIPLES
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 48 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 16, marginBottom: 40 }}>
           {[
             {
               n: '01',
@@ -215,6 +217,7 @@ export function ContactScreen({ width = 1280, height = 800 }: { width?: number |
   const [sent, setSent] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -309,7 +312,7 @@ export function ContactScreen({ width = 1280, height = 800 }: { width?: number |
     >
       <LandingNav />
 
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 56px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: isMobile ? '28px 18px' : '48px 56px' }}>
         <div className="eyebrow" style={{ marginBottom: 12 }}>
           SAY HELLO
         </div>
@@ -318,18 +321,18 @@ export function ContactScreen({ width = 1280, height = 800 }: { width?: number |
             margin: 0,
             fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 500,
-            fontSize: 60,
+            fontSize: isMobile ? 34 : 60,
             letterSpacing: '-0.035em',
             marginBottom: 12,
           }}
         >
           Contact us
         </h1>
-        <p style={{ fontSize: 16, color: 'var(--t-3)', maxWidth: 540, marginBottom: 40 }}>
+        <p style={{ fontSize: isMobile ? 14 : 16, color: 'var(--t-3)', maxWidth: 540, marginBottom: isMobile ? 28 : 40 }}>
           Questions, feedback, partnership ideas, bug reports — we read everything that lands in our inbox.
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 48, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.3fr 1fr', gap: isMobile ? 24 : 48, alignItems: 'start' }}>
           <form
             onSubmit={handleSubmit}
             style={{
@@ -399,7 +402,7 @@ export function ContactScreen({ width = 1280, height = 800 }: { width?: number |
               </div>
             ) : (
               <>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 14 }}>
                   <FormField label="Name">
                     <input
                       className="input"
@@ -734,6 +737,7 @@ function FormField({
 }
 
 export function TermsScreen({ width = 1280, height = 800 }: { width?: number | string; height?: number | string }) {
+  const isMobile = useIsMobile();
   const sections = [
     {
       n: '01',
@@ -793,7 +797,7 @@ export function TermsScreen({ width = 1280, height = 800 }: { width?: number | s
     >
       <LandingNav />
 
-      <div style={{ maxWidth: 880, margin: '0 auto', padding: '48px 56px' }}>
+      <div style={{ maxWidth: 880, margin: '0 auto', padding: isMobile ? '28px 18px' : '48px 56px' }}>
         <div className="eyebrow" style={{ marginBottom: 16 }}>
           LEGAL
         </div>
@@ -802,7 +806,7 @@ export function TermsScreen({ width = 1280, height = 800 }: { width?: number | s
             margin: 0,
             fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 500,
-            fontSize: 60,
+            fontSize: isMobile ? 34 : 60,
             letterSpacing: '-0.035em',
             marginBottom: 12,
           }}
@@ -856,8 +860,8 @@ export function TermsScreen({ width = 1280, height = 800 }: { width?: number | s
               key={s.n}
               style={{
                 display: 'grid',
-                gridTemplateColumns: '60px 1fr',
-                gap: 24,
+                gridTemplateColumns: isMobile ? '1fr' : '60px 1fr',
+                gap: isMobile ? 10 : 24,
                 paddingBottom: 24,
                 borderBottom: '1px solid var(--bd-1)',
               }}
@@ -897,6 +901,7 @@ export function TermsScreen({ width = 1280, height = 800 }: { width?: number | s
 }
 
 export function PrivacyScreen({ width = 1280, height = 800 }: { width?: number | string; height?: number | string }) {
+  const isMobile = useIsMobile();
   const sections = [
     {
       n: '01',
@@ -962,7 +967,7 @@ export function PrivacyScreen({ width = 1280, height = 800 }: { width?: number |
     >
       <LandingNav />
 
-      <div style={{ maxWidth: 880, margin: '0 auto', padding: '48px 56px' }}>
+      <div style={{ maxWidth: 880, margin: '0 auto', padding: isMobile ? '28px 18px' : '48px 56px' }}>
         <div className="eyebrow" style={{ marginBottom: 16 }}>
           LEGAL
         </div>
@@ -971,7 +976,7 @@ export function PrivacyScreen({ width = 1280, height = 800 }: { width?: number |
             margin: 0,
             fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 500,
-            fontSize: 60,
+            fontSize: isMobile ? 34 : 60,
             letterSpacing: '-0.035em',
             marginBottom: 12,
           }}
@@ -1022,8 +1027,8 @@ export function PrivacyScreen({ width = 1280, height = 800 }: { width?: number |
               key={s.n}
               style={{
                 display: 'grid',
-                gridTemplateColumns: '60px 1fr',
-                gap: 24,
+                gridTemplateColumns: isMobile ? '1fr' : '60px 1fr',
+                gap: isMobile ? 10 : 24,
                 paddingBottom: 24,
                 borderBottom: '1px solid var(--bd-1)',
               }}
@@ -1063,6 +1068,7 @@ export function PrivacyScreen({ width = 1280, height = 800 }: { width?: number |
 }
 
 export function PricingScreen({ width = 1280, height = 800 }: { width?: number | string; height?: number | string }) {
+  const isMobile = useIsMobile();
   const plans = [
     {
       key: 'free',
@@ -1142,7 +1148,7 @@ export function PricingScreen({ width = 1280, height = 800 }: { width?: number |
     >
       <LandingNav />
 
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 56px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: isMobile ? '28px 18px' : '48px 56px' }}>
         <div className="eyebrow" style={{ marginBottom: 16 }}>
           PRICING
         </div>
@@ -1151,7 +1157,7 @@ export function PricingScreen({ width = 1280, height = 800 }: { width?: number |
             margin: 0,
             fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 500,
-            fontSize: 60,
+            fontSize: isMobile ? 34 : 60,
             letterSpacing: '-0.035em',
             lineHeight: 1.05,
             marginBottom: 16,
@@ -1171,7 +1177,7 @@ export function PricingScreen({ width = 1280, height = 800 }: { width?: number |
             plan.
           </span>
         </h1>
-        <p style={{ margin: '0 0 48px', fontSize: 16, color: 'var(--t-3)', lineHeight: 1.6, maxWidth: 640 }}>
+        <p style={{ margin: isMobile ? '0 0 28px' : '0 0 48px', fontSize: isMobile ? 14 : 16, color: 'var(--t-3)', lineHeight: 1.6, maxWidth: 640 }}>
           Start free. Upgrade when you outgrow the limits. Every plan ships with the same brushed-steel
           Zora you already know — only the capacity changes.
         </p>
@@ -1179,9 +1185,9 @@ export function PricingScreen({ width = 1280, height = 800 }: { width?: number |
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 20,
-            marginBottom: 56,
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gap: isMobile ? 16 : 20,
+            marginBottom: isMobile ? 36 : 56,
             alignItems: 'stretch',
           }}
         >
@@ -1369,19 +1375,20 @@ const socialIconStyle: React.CSSProperties = {
 };
 
 export function SiteFooter() {
+  const isMobile = useIsMobile();
   return (
     <div
       style={{
         borderTop: '1px solid var(--bd-1)',
-        paddingTop: 32,
+        paddingTop: isMobile ? 24 : 32,
         paddingBottom: 24,
         display: 'grid',
-        gridTemplateColumns: '1.4fr 1fr 1fr 1fr',
-        gap: 32,
+        gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : '1.4fr 1fr 1fr 1fr',
+        gap: isMobile ? 22 : 32,
         marginTop: 8,
       }}
     >
-      <div>
+      <div style={{ gridColumn: isMobile ? '1 / -1' : undefined }}>
         <ZoraWordmark size={16} tagline />
         <p style={{ marginTop: 14, fontSize: 12, color: 'var(--t-3)', maxWidth: 280, lineHeight: 1.6 }}>
           Intelligence beyond chat. Built by Xorvion in Noida, India.
@@ -1447,8 +1454,10 @@ export function SiteFooter() {
           paddingTop: 16,
           borderTop: '1px solid var(--bd-1)',
           display: 'flex',
+          flexWrap: 'wrap',
+          gap: 8,
           justifyContent: 'space-between',
-          fontSize: 11,
+          fontSize: isMobile ? 10 : 11,
           color: 'var(--t-4)',
           fontFamily: "'JetBrains Mono', monospace",
           letterSpacing: '0.1em',

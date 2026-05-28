@@ -17,6 +17,7 @@ interface IntroSplashProps {
 export function IntroSplash({ width = 1280, height = 720, onDone, autoplay = true }: IntroSplashProps) {
   const [t, setT] = React.useState(0);
   const [replay, setReplay] = React.useState(0);
+  const isMobile = width < 768;
 
   React.useEffect(() => {
     if (!autoplay) return;
@@ -173,7 +174,7 @@ export function IntroSplash({ width = 1280, height = 720, onDone, autoplay = tru
             transition: 'filter .2s',
           }}
         >
-          <ZoraMark size={132} />
+          <ZoraMark size={isMobile ? 88 : 132} />
           <div
             style={{
               position: 'absolute',
@@ -191,7 +192,7 @@ export function IntroSplash({ width = 1280, height = 720, onDone, autoplay = tru
             style={{
               fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 600,
-              fontSize: 68,
+              fontSize: isMobile ? 40 : 68,
               letterSpacing: '0.34em',
               color: '#ececec',
               textTransform: 'uppercase',
@@ -212,7 +213,7 @@ export function IntroSplash({ width = 1280, height = 720, onDone, autoplay = tru
             ZORA
           </div>
         </div>
-        <div style={{ width: 260, height: 1, background: 'rgba(255,255,255,0.06)', marginTop: -12, position: 'relative' }}>
+        <div style={{ width: isMobile ? 200 : 260, height: 1, background: 'rgba(255,255,255,0.06)', marginTop: -12, position: 'relative' }}>
           <div
             style={{
               position: 'absolute',
@@ -305,10 +306,10 @@ export function IntroSplash({ width = 1280, height = 720, onDone, autoplay = tru
       <div
         style={{
           position: 'absolute',
-          bottom: 70,
+          bottom: isMobile ? 56 : 70,
           left: '50%',
           transform: 'translateX(-50%)',
-          width: 320,
+          width: isMobile ? Math.min(260, width - 40) : 320,
           height: 2,
           background: 'rgba(255,255,255,0.05)',
           borderRadius: 1,

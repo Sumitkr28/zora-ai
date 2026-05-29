@@ -251,27 +251,31 @@ export function ChatScreen() {
 
     const mime = file.type || 'application/octet-stream';
     const isImage = mime.startsWith('image/');
-    const sizeMB = file.size / 1024 / 1024;
 
-    if (isImage && sizeMB <= 10) {
-      // Inline path — base64 the file, attach as inlineData
+    if (isImage) {
+      // Inline path — downscale + recompress, then base64 as inlineData.
+      // A raw phone photo (4 MB+) base64-inflates past Vercel's 4.5 MB serverless
+      // request-body limit → FUNCTION_PAYLOAD_TOO_LARGE. Gemini downscales images to a
+      // 1568px max edge anyway, so resizing here costs no real quality and keeps the
+      // payload tiny. Falls through to the server upload path if the browser can't
+      // decode the image (e.g. HEIC).
       try {
-        const base64 = await fileToBase64(file);
+        const { base64, mimeType: outMime } = await downscaleImage(file);
         setPendingAttachment({
           kind: 'inline',
           name: file.name,
           size: file.size,
-          mimeType: mime,
+          mimeType: outMime,
           inlineDataKey: base64,
           category: 'image',
         });
+        return;
       } catch {
-        setUploadError('Could not read image.');
+        // fall through to the server upload path below
       }
-      return;
     }
 
-    // Server upload path (PDF / audio / video / image >10MB)
+    // Server upload path (PDF / audio / video / undecodable image)
     setPendingAttachment({
       kind: 'uploading',
       name: file.name,
@@ -1681,16 +1685,48 @@ function categoryOf(mime: string): 'image' | 'pdf' | 'audio' | 'video' {
   return 'pdf';
 }
 
-function fileToBase64(file: File): Promise<string> {
+// Longest edge Gemini keeps for image inputs; resizing larger photos costs no real
+// quality and keeps the inline base64 payload well under Vercel's 4.5 MB body limit.
+const MAX_IMAGE_EDGE = 1568;
+
+// Decode an image, scale it so its longest edge is ≤ MAX_IMAGE_EDGE, re-encode as JPEG,
+// and return the base64 (no data-URL prefix). Rejects if the browser can't decode the
+// source (e.g. HEIC) so the caller can fall back to the server upload path.
+function downscaleImage(file: File): Promise<{ base64: string; mimeType: string }> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const { width, height } = img;
+      if (!width || !height) {
+        reject(new Error('Image has no dimensions'));
+        return;
+      }
+      const scale = Math.min(1, MAX_IMAGE_EDGE / Math.max(width, height));
+      const w = Math.max(1, Math.round(width * scale));
+      const h = Math.max(1, Math.round(height * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        reject(new Error('No 2D canvas context'));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
       const comma = dataUrl.indexOf(',');
-      resolve(comma >= 0 ? dataUrl.slice(comma + 1) : dataUrl);
+      resolve({
+        base64: comma >= 0 ? dataUrl.slice(comma + 1) : dataUrl,
+        mimeType: 'image/jpeg',
+      });
     };
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Could not decode image'));
+    };
+    img.src = url;
   });
 }
 

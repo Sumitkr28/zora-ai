@@ -76,11 +76,31 @@ export async function exportUserData(uid: string): Promise<ExportedData> {
 /**
  * Delete all of the user's conversations (messages + doc, via deleteConversation) and then
  * their /users/{uid} profile doc. Call BEFORE deleting the Auth user, while still signed in.
+ *
+ * Best-effort: a single bad/legacy conversation (e.g. a doc with a missing or mismatched
+ * `userId` that trips the Firestore rule) must NOT abort the whole account deletion. We delete
+ * each conversation independently, swallow per-conversation failures, and always attempt the
+ * profile-doc delete. Any leftover conversation docs still carry an `expiresAt` and get swept
+ * by the 7-day cleanup. The caller proceeds to delete the Auth user regardless — getting the
+ * account itself removed is what matters most for the user.
  */
 export async function deleteAllUserData(uid: string): Promise<void> {
-  const metas = await listConversations(uid);
-  for (const m of metas) {
-    await deleteConversation(m.id);
+  let metas: Awaited<ReturnType<typeof listConversations>> = [];
+  try {
+    metas = await listConversations(uid);
+  } catch (e) {
+    console.error('[deleteAllUserData] listConversations failed:', e);
   }
-  await deleteDoc(doc(getDb(), 'users', uid));
+  for (const m of metas) {
+    try {
+      await deleteConversation(m.id);
+    } catch (e) {
+      console.error(`[deleteAllUserData] failed to delete conversation ${m.id}:`, e);
+    }
+  }
+  try {
+    await deleteDoc(doc(getDb(), 'users', uid));
+  } catch (e) {
+    console.error('[deleteAllUserData] failed to delete /users doc:', e);
+  }
 }

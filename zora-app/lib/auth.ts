@@ -187,12 +187,24 @@ export async function deleteAccount(): Promise<void> {
         : null;
 
   if (reauthProvider) {
+    // Force the account chooser so re-auth maps to the right account (avoids a silent
+    // auth/user-mismatch when the browser is signed into several Google accounts).
+    if (reauthProvider instanceof GoogleAuthProvider) {
+      reauthProvider.setCustomParameters({ prompt: 'select_account' });
+    }
     await reauthenticateWithPopup(user, reauthProvider);
   }
 
-  // Delete data first (still authenticated), then the Auth user.
+  // Delete data first (still authenticated, best-effort — see deleteAllUserData), then the
+  // Auth user. deleteUser is the step that actually removes the account; if it throws, the
+  // caller surfaces the real Firebase error code.
   await deleteAllUserData(user.uid);
-  await deleteUser(user);
+  try {
+    await deleteUser(user);
+  } catch (e) {
+    console.error('[deleteAccount] deleteUser failed:', e);
+    throw e;
+  }
 }
 
 // ─────────────────────────────────────────────────────────────

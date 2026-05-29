@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
+    "@vercel/analytics": "^2.0.1",
     "firebase": "^11.0.2",
     "framer-motion": "^11.11.17",
     "libphonenumber-js": "^1.11.14",

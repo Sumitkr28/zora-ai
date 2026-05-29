@@ -801,13 +801,24 @@ function DeleteAccountModal({ onClose }: { onClose: () => void }) {
       await deleteAccount();
       window.location.href = '/';
     } catch (e) {
+      console.error('[DeleteAccountModal] delete failed:', e);
       const code = (e as { code?: string } | undefined)?.code;
       if (code === 'auth/requires-recent-login') {
         setNotice('For security, please sign out and sign back in, then try deleting again.');
       } else if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
         setNotice('Re-authentication was cancelled — your account was not deleted.');
+      } else if (code === 'auth/user-mismatch') {
+        setNotice('That was a different account. Re-authenticate with the account you are signed in as.');
+      } else if (code === 'auth/popup-blocked') {
+        setNotice('Your browser blocked the sign-in popup. Allow popups for this site and try again.');
+      } else if (code === 'auth/unauthorized-domain') {
+        setNotice('This domain is not authorised for sign-in. Add it in Firebase → Auth → Authorized domains.');
       } else {
-        setNotice("Couldn't delete your account. Please try again.");
+        setNotice(
+          code
+            ? `Couldn't delete your account (${code}). Please try again.`
+            : "Couldn't delete your account. Please try again.",
+        );
       }
       setBusy(false);
     }

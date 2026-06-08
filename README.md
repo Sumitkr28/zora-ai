@@ -1,6 +1,6 @@
 # Zora — Intelligence beyond chat
 
-**Zora** is a free-tier AI chat assistant built by **[Xorvion](mailto:xorvion.ai@gmail.com)**. It streams responses from Google's Gemini models, remembers your conversations, reads the files you upload, and wraps it all in a fast, dark, brushed-steel interface.
+**Zora** is a free-tier AI chat assistant — a full-stack product designed and built end-to-end by **[Sumit Kumar](https://sumitkr28.vercel.app/)**, creator of **Xorvion**. It streams responses from Google's Gemini models, remembers your conversations, reads the files you upload, and wraps it all in a fast, dark, brushed-steel interface.
 
 [![Live Demo](https://img.shields.io/badge/▶_Live_Demo-zora--chatbot.vercel.app-2ea043?style=for-the-badge&logo=vercel&logoColor=white&labelColor=0d1117)](https://zora-chatbot.vercel.app/)
 
@@ -82,13 +82,15 @@ zora-app/
 
 ---
 
-## 🏢 About
+## 👋 About the creator
 
-Built by **Xorvion Pvt Ltd** — a small team in Noida, India, making tools we want to use ourselves. Zora is our flagship assistant.
+Hi, I'm **Sumit Kumar** — a developer based in Noida, India who loves taking AI products from idea to production. I build under **Xorvion**, my personal studio where I design, build, and ship multiple AI projects end-to-end. Zora is one of them, and I owned every layer of it: authentication, real-time streaming AI, file understanding, persistence, the API design, and the entire brushed-steel design system.
 
-🌐 **Website:** [xorvion-ai.vercel.app](https://xorvion-ai.vercel.app/)  
-🔗 **LinkedIn:** [linkedin.com/company/xorvion](https://linkedin.com/company/xorvion)  
-📧 **Email:** [xorvion.ai@gmail.com](mailto:xorvion.ai@gmail.com)
+I'm always open to connecting with recruiters, founders, and fellow builders. If you like what you see here, let's talk.
+
+🌐 **Portfolio:** [sumitkr28.vercel.app](https://sumitkr28.vercel.app/)  
+💼 **LinkedIn:** [linkedin.com/in/sumit-kumar2812](https://www.linkedin.com/in/sumit-kumar2812/)  
+🐙 **GitHub:** [github.com/Sumitkr28](https://github.com/Sumitkr28)
 
 ---
 

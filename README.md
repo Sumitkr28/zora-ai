@@ -95,7 +95,8 @@ I'm always open to connecting with recruiters, founders, and fellow builders. If
 ### 🚀 Xorvion — my studio
 
 🌐 **Website:** [xorvion-ai.vercel.app](https://xorvion-ai.vercel.app/)  
-🔗 **LinkedIn:** [linkedin.com/company/xorvion](https://linkedin.com/company/xorvion)
+🔗 **LinkedIn:** [linkedin.com/company/xorvion](https://linkedin.com/company/xorvion)  
+🐙 **GitHub:** [github.com/xorvion-ai](https://github.com/xorvion-ai)
 
 ---
 

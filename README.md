@@ -84,19 +84,14 @@ zora-app/
 
 ## 👋 About the creator
 
-Hi, I'm **Sumit Kumar** — an AI Engineer based in Noida, India who loves taking AI products from idea to production. I build under **Xorvion**, my personal studio where I design, build, and ship multiple AI projects end-to-end. Zora is one of them, and I owned every layer of it: authentication, real-time streaming AI, file understanding, persistence, the API design, and the entire brushed-steel design system.
+Hi, I'm **Sumit Kumar** — an AI/ML Engineer based in Noida, India. I design, build, and ship production-grade AI products end-to-end, and I built **Zora AI** across every layer: authentication, real-time streaming AI, file understanding, persistence, the API design, and the full interface.
 
-I'm always open to connecting with recruiters, founders, and fellow builders. If you like what you see here, let's talk.
+I'm always open to connecting with recruiters, founders, and fellow builders — if you like what you see here, let's talk.
 
-🌐 **Portfolio:** [sumitkr28.vercel.app](https://sumitkr28.vercel.app/)  
-💼 **LinkedIn:** [linkedin.com/in/sumit-kumar2812](https://www.linkedin.com/in/sumit-kumar2812/)  
-🐙 **GitHub:** [github.com/Sumitkr28](https://github.com/Sumitkr28)
-
-### 🚀 Xorvion — my studio
-
-🌐 **Website:** [xorvion-ai.vercel.app](https://xorvion-ai.vercel.app/)  
-🔗 **LinkedIn:** [linkedin.com/company/xorvion](https://linkedin.com/company/xorvion)  
-🐙 **GitHub:** [github.com/xorvion-ai](https://github.com/xorvion-ai)
+- 🌐 **Portfolio:** [sumitkr28.vercel.app](https://sumitkr28.vercel.app)
+- 💼 **LinkedIn:** [linkedin.com/in/sumit-kumar2812](https://www.linkedin.com/in/sumit-kumar2812/)
+- 🐙 **GitHub:** [github.com/Sumitkr28](https://github.com/Sumitkr28)
+- 🚀 **AI Studio:** [Xorvion](https://xorvion-ai.vercel.app)
 
 ---
 

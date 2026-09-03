@@ -17,15 +17,18 @@ const config: CapacitorConfig = {
   },
 
   plugins: {
-    SplashScreen: {
-      // The web layer hides the splash itself (CapacitorBootstrap) once the
-      // first screen has painted, so autohide is off to avoid a white flash.
-      launchAutoHide: false,
-      backgroundColor: '#060607',
-      androidSplashResourceName: 'splash',
-      androidScaleType: 'CENTER_CROP',
-      showSpinner: false,
-    },
+    // NO SplashScreen plugin, on purpose.
+    //
+    // Capacitor scaffolds a splash image, but the app does not need one. The
+    // launch window is painted a flat #060607 (values/styles.xml ->
+    // windowBackground), the same colour as the app's own background, so
+    // tapping the icon goes straight into Zora with no logo screen in between
+    // and no visible handover.
+    //
+    // This also deletes a whole class of bugs: the scaffolded splash stretched
+    // the circular Zora mark into an oval, because the bitmap was scaled to the
+    // window bounds. Every "fix" was really just choosing a different scaling
+    // mode. No image, nothing to distort.
 
     FirebaseAuthentication: {
       // Native Google + GitHub. Phone is absent on purpose: Firebase Spark

@@ -16,7 +16,14 @@
     </style>
 
 
+    <!-- Launch theme: a plain colour, no logo.
+         Tapping the icon goes straight into the app; this background only covers
+         the few frames before the WebView paints, and because it is the same
+         colour as the app's own background (bg-0) the handover is invisible.
+         No bitmap here means nothing can be stretched out of shape. -->
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
-        <item name="android:background">@drawable/splash</item>
+        <item name="android:windowBackground">@color/splashBackground</item>
+        <item name="windowSplashScreenBackground">@color/splashBackground</item>
+        <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
     </style>
 </resources>

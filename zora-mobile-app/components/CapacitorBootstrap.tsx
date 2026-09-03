@@ -8,10 +8,14 @@
 
 import React from 'react';
 import { installApiShim } from '../lib/api-shim';
+import { installNavShim } from '../lib/nav-shim';
+import { CHAT_PATH } from '../lib/routes';
 
 // Installed at module evaluation, before React mounts, so the very first
-// fetch('/api/...') from any screen is already rewritten.
+// fetch('/api/...') from any screen is already rewritten and the first link tap
+// is already routed to a path the asset server can resolve.
 installApiShim();
+installNavShim();
 
 export function CapacitorBootstrap() {
   React.useEffect(() => {
@@ -29,15 +33,6 @@ export function CapacitorBootstrap() {
         await StatusBar.setBackgroundColor({ color: '#060607' });
       } catch {
         /* status bar unavailable on this device */
-      }
-
-      // Hide the splash only once React has painted, so there is no white flash
-      // between the native splash and the first screen.
-      try {
-        const { SplashScreen } = await import('@capacitor/splash-screen');
-        await SplashScreen.hide();
-      } catch {
-        /* no splash configured */
       }
 
       // Let the composer stay above the on-screen keyboard.
@@ -73,8 +68,9 @@ export function CapacitorBootstrap() {
           try {
             const user = await completeEmailLinkFromUrl(url);
             // Signed in — land on the chat rather than the login screen.
-            // trailingSlash:true means routes end with a slash.
-            if (user) window.location.replace('/chat/');
+            // toAssetPath because Capacitor's asset server cannot resolve
+            // '/chat/' to its index.html (see lib/nav-shim.ts).
+            if (user) window.location.replace(CHAT_PATH);
           } catch (err) {
             console.error('[deep-link] email sign-in failed:', err);
           }

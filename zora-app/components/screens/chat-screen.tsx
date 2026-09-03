@@ -88,7 +88,20 @@ function writeSessionChat(uid: string | null, convId: string | null, messages: M
   }
 }
 
-export function ChatScreen() {
+export function ChatScreen({
+  hideSuggestions = false,
+  hideGuestNote = false,
+}: {
+  /**
+   * Hide the four prompt cards ("Summarize a PDF", "Explain this code", …) on a
+   * fresh chat. The Zora mark and the "How can I help you today?" heading stay,
+   * centred in the thread area, and the subtitle drops its "pick a suggestion
+   * below" clause.
+   */
+  hideSuggestions?: boolean;
+  /** Hide the "· guest mode — wipes on refresh" caption under the composer. */
+  hideGuestNote?: boolean;
+} = {}) {
   const { user, loading } = useAuth();
   const loggedIn = !!user;
   const uid = user?.uid ?? null;
@@ -538,7 +551,11 @@ export function ChatScreen() {
           className="no-scrollbar"
         >
           {messages.length === 0 ? (
-            <EmptyState onPick={handleSuggestionClick} isMobile={isMobile} />
+            <EmptyState
+              onPick={handleSuggestionClick}
+              isMobile={isMobile}
+              hideSuggestions={hideSuggestions}
+            />
           ) : (
             <Thread messages={messages} isMobile={isMobile} />
           )}
@@ -556,6 +573,7 @@ export function ChatScreen() {
           loggedIn={loggedIn}
           textareaRef={composerRef}
           isMobile={isMobile}
+          hideGuestNote={hideGuestNote}
         />
       </div>
 
@@ -736,6 +754,56 @@ function Sidebar({
             </div>
           </div>
         )}
+      </div>
+
+      {/* Site links, reachable without signing in. Previously these lived only
+          behind /account, so a guest had to log in and open their profile to
+          find About, Privacy or Contact. */}
+      <div
+        style={{
+          padding: '8px',
+          borderTop: '1px solid var(--bd-1)',
+          background: 'var(--bg-1)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
+        {(
+          [
+            ['home', 'Home', '/'],
+            ['info', 'About', '/about'],
+            ['shield', 'Privacy', '/privacy'],
+            ['mail', 'Contact', '/contact'],
+          ] as const
+        ).map(([icon, label, href]) => (
+          <a
+            key={href}
+            href={href}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '9px 10px',
+              borderRadius: 8,
+              fontSize: 13,
+              color: 'var(--t-2)',
+              textDecoration: 'none',
+              transition: 'background .15s, color .15s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--bg-2)';
+              e.currentTarget.style.color = 'var(--t-1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--t-2)';
+            }}
+          >
+            <Icon name={icon} size={15} color="#8b9098" />
+            {label}
+          </a>
+        ))}
       </div>
 
       <div style={{ padding: '12px', borderTop: '1px solid var(--bd-1)', background: 'var(--bg-1)' }}>
@@ -997,7 +1065,15 @@ function TopBar({
   );
 }
 
-function EmptyState({ onPick, isMobile }: { onPick: (prompt: string) => void; isMobile: boolean }) {
+function EmptyState({
+  onPick,
+  isMobile,
+  hideSuggestions = false,
+}: {
+  onPick: (prompt: string) => void;
+  isMobile: boolean;
+  hideSuggestions?: boolean;
+}) {
   return (
     <div
       style={{
@@ -1025,12 +1101,14 @@ function EmptyState({ onPick, isMobile }: { onPick: (prompt: string) => void; is
         How can I help you today?
       </h1>
       <p style={{ marginTop: 8, fontSize: isMobile ? 13 : 14, color: 'var(--t-3)', textAlign: 'center' }}>
-        Ask anything, drop a file, or pick a suggestion below.
+        {hideSuggestions
+          ? 'Ask anything, or drop a file.'
+          : 'Ask anything, drop a file, or pick a suggestion below.'}
       </p>
 
       <div
         style={{
-          display: 'grid',
+          display: hideSuggestions ? 'none' : 'grid',
           gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
           gap: 10,
           marginTop: isMobile ? 22 : 32,
@@ -1281,6 +1359,7 @@ function Composer({
   loggedIn,
   textareaRef,
   isMobile,
+  hideGuestNote = false,
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -1294,6 +1373,7 @@ function Composer({
   loggedIn: boolean;
   textareaRef: React.RefObject<HTMLTextAreaElement>;
   isMobile: boolean;
+  hideGuestNote?: boolean;
 }) {
   const [addMenuOpen, setAddMenuOpen] = React.useState(false);
   const addMenuRef = React.useRef<HTMLDivElement | null>(null);
@@ -1318,8 +1398,18 @@ function Composer({
   React.useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
-    el.style.height = '24px';
-    el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+    const resize = () => {
+      el.style.height = '24px';
+      el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+    };
+    resize();
+    // The first run can land before fonts/layout have settled, where
+    // scrollHeight reads far too large — it then clamps to the 160px cap and
+    // stays there, because for an empty textarea this effect only re-runs when
+    // `value` changes. The composer looks ~160px tall until the user types,
+    // which is what unsticks it. Re-measuring next frame fixes it.
+    const raf = requestAnimationFrame(resize);
+    return () => cancelAnimationFrame(raf);
   }, [value, textareaRef]);
 
   const sendDisabled = !streaming && !value.trim() && !pendingAttachment;
@@ -1610,7 +1700,9 @@ function Composer({
           }}
         >
           <span>Zora can make mistakes. Verify important info.</span>
-          {!loggedIn && <span style={{ color: 'var(--t-3)' }}>· guest mode — wipes on refresh</span>}
+          {!loggedIn && !hideGuestNote && (
+            <span style={{ color: 'var(--t-3)' }}>· guest mode — wipes on refresh</span>
+          )}
         </div>
       </div>
     </div>

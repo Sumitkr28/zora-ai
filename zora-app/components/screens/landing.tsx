@@ -11,7 +11,22 @@ import { useAuth } from '../AuthProvider';
 import { useIsMobile } from '../useIsMobile';
 import { MobileDrawer } from '../mobile-drawer';
 
-export function Landing({ width = 1280, height = 800 }: { width?: number | string; height?: number | string }) {
+export function Landing({
+  width = 1280,
+  height = 800,
+  hideIntroCta = false,
+  chatCtaLabel = 'Start chatting free',
+}: {
+  width?: number | string;
+  height?: number | string;
+  /**
+   * Hide the "Watch the intro" button. The Android app does not play the
+   * cinematic intro at all, so the CTA would lead nowhere useful.
+   */
+  hideIntroCta?: boolean;
+  /** Label for the primary CTA. Defaults to the web wording. */
+  chatCtaLabel?: string;
+}) {
   const isMobile = useIsMobile();
   return (
     <div
@@ -161,21 +176,23 @@ export function Landing({ width = 1280, height = 800 }: { width?: number | strin
                 justifyContent: 'center',
               }}
             >
-              Start chatting free
+              {chatCtaLabel}
               <Icon name="arrow" size={16} color="#0a0a0a" />
             </Link>
-            <Link
-              href="/?intro=1"
-              className="btn ghost"
-              style={{
-                fontSize: 15,
-                padding: '14px 22px',
-                textDecoration: 'none',
-                justifyContent: 'center',
-              }}
-            >
-              <Icon name="play" size={14} /> Watch the intro
-            </Link>
+            {!hideIntroCta && (
+              <Link
+                href="/?intro=1"
+                className="btn ghost"
+                style={{
+                  fontSize: 15,
+                  padding: '14px 22px',
+                  textDecoration: 'none',
+                  justifyContent: 'center',
+                }}
+              >
+                <Icon name="play" size={14} /> Watch the intro
+              </Link>
+            )}
           </div>
           <div
             style={{

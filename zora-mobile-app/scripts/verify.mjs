@@ -80,6 +80,37 @@ check('does not rewrite a path merely containing "api"', () => {
   assert.equal(resolveApiUrl('/rapid/thing', ORIGIN, BASE), null);
 });
 
+// ── 1b. Route -> asset path mapping (nav shim) ───────────────────────────────
+// Capacitor's asset server cannot resolve a directory to its index.html, so
+// plain <a href="/login"> full-loads land on the ROOT page. Mirrors toAssetPath
+// in lib/nav-shim.ts.
+function toAssetPath(pathname) {
+  if (/\.[a-z0-9]+$/i.test(pathname)) return pathname;
+  const withSlash = pathname.endsWith('/') ? pathname : `${pathname}/`;
+  return `${withSlash}index.html`;
+}
+
+console.log('\nRoute -> asset path mapping:');
+
+check('bare route gets /index.html', () => {
+  assert.equal(toAssetPath('/login'), '/login/index.html');
+  assert.equal(toAssetPath('/chat'), '/chat/index.html');
+});
+
+check('trailing slash is not doubled', () => {
+  assert.equal(toAssetPath('/login/'), '/login/index.html');
+});
+
+check('root maps to /index.html', () => {
+  assert.equal(toAssetPath('/'), '/index.html');
+});
+
+check('real files are left alone', () => {
+  for (const f of ['/icon.svg', '/login/index.html', '/_next/static/x.js']) {
+    assert.equal(toAssetPath(f), f, `should not rewrite ${f}`);
+  }
+});
+
 // ── 2. No pricing / subscription surface in the built app ────────────────────
 const OUT = path.join(ROOT, 'out');
 

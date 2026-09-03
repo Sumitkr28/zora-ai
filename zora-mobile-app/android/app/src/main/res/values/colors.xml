@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Matches the bg-0 token in zora-app/app/globals.css and the splash
+         backgroundColor in capacitor.config.ts, so the native splash and the
+         first painted screen are the same colour and the handover is invisible. -->
+    <color name="splashBackground">#060607</color>
+</resources>

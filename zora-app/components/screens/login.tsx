@@ -103,6 +103,9 @@ export function LoginScreen({
   width = 1280,
   height = 800,
   hidePhone = false,
+  hideMicrosoft = false,
+  hideGithub = false,
+  redirectOnSuccess,
 }: {
   width?: number | string;
   height?: number | string;
@@ -117,6 +120,16 @@ export function LoginScreen({
    * dead control in a Play Store build makes no sense.
    */
   hidePhone?: boolean;
+  /** Hide the "Sign in with Microsoft" button. */
+  hideMicrosoft?: boolean;
+  /** Hide the "Sign in with GitHub" button. */
+  hideGithub?: boolean;
+  /**
+   * When set, a successful sign-in navigates straight here instead of showing
+   * the "You're in." confirmation screen. The Android app sends users directly
+   * to the chat; the web keeps the confirmation step.
+   */
+  redirectOnSuccess?: string;
 }) {
   const { user } = useAuth();
   const [view, setView] = React.useState<View>('form');
@@ -141,9 +154,16 @@ export function LoginScreen({
   }, [view]);
 
   // Auto-jump to 'done' when auth state flips to signed-in (handles email-link return).
+  // With redirectOnSuccess set (the Android app), skip that confirmation screen
+  // and go straight to the destination instead.
   React.useEffect(() => {
-    if (user && view !== 'done') setView('done');
-  }, [user, view]);
+    if (!user) return;
+    if (redirectOnSuccess) {
+      window.location.replace(redirectOnSuccess);
+      return;
+    }
+    if (view !== 'done') setView('done');
+  }, [user, view, redirectOnSuccess]);
 
   React.useEffect(() => {
     return () => {
@@ -356,6 +376,8 @@ export function LoginScreen({
                 busy={busy}
                 error={error}
                 hidePhone={hidePhone}
+                hideMicrosoft={hideMicrosoft}
+                hideGithub={hideGithub}
               />
             )}
             {view === 'otp' && (
@@ -377,6 +399,7 @@ export function LoginScreen({
                 onResend={handleResend}
                 busy={busy}
                 error={error}
+                hideStep={hidePhone}
               />
             )}
             {view === 'done' && <DoneView />}
@@ -522,6 +545,8 @@ function FormView({
   busy,
   error,
   hidePhone = false,
+  hideMicrosoft = false,
+  hideGithub = false,
 }: {
   identifier: string;
   setIdentifier: (v: string) => void;
@@ -536,6 +561,8 @@ function FormView({
   busy: boolean;
   error: string | null;
   hidePhone?: boolean;
+  hideMicrosoft?: boolean;
+  hideGithub?: boolean;
 }) {
   const isMobile = useIsMobile();
   return (
@@ -643,39 +670,43 @@ function FormView({
         <Icon name="google" size={16} /> Sign in with Google
       </button>
 
-      <button
-        onClick={onMicrosoft}
-        disabled={busy}
-        className="btn"
-        style={{
-          width: '100%',
-          justifyContent: 'center',
-          padding: 13,
-          fontSize: 14,
-          marginTop: 8,
-          opacity: busy ? 0.6 : 1,
-          cursor: busy ? 'wait' : 'pointer',
-        }}
-      >
-        <Icon name="microsoft" size={16} /> Sign in with Microsoft
-      </button>
+      {!hideMicrosoft && (
+        <button
+          onClick={onMicrosoft}
+          disabled={busy}
+          className="btn"
+          style={{
+            width: '100%',
+            justifyContent: 'center',
+            padding: 13,
+            fontSize: 14,
+            marginTop: 8,
+            opacity: busy ? 0.6 : 1,
+            cursor: busy ? 'wait' : 'pointer',
+          }}
+        >
+          <Icon name="microsoft" size={16} /> Sign in with Microsoft
+        </button>
+      )}
 
-      <button
-        onClick={onGithub}
-        disabled={busy}
-        className="btn"
-        style={{
-          width: '100%',
-          justifyContent: 'center',
-          padding: 13,
-          fontSize: 14,
-          marginTop: 8,
-          opacity: busy ? 0.6 : 1,
-          cursor: busy ? 'wait' : 'pointer',
-        }}
-      >
-        <Icon name="github" size={16} /> Sign in with GitHub
-      </button>
+      {!hideGithub && (
+        <button
+          onClick={onGithub}
+          disabled={busy}
+          className="btn"
+          style={{
+            width: '100%',
+            justifyContent: 'center',
+            padding: 13,
+            fontSize: 14,
+            marginTop: 8,
+            opacity: busy ? 0.6 : 1,
+            cursor: busy ? 'wait' : 'pointer',
+          }}
+        >
+          <Icon name="github" size={16} /> Sign in with GitHub
+        </button>
+      )}
 
       {emailOpen ? (
         <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -1107,18 +1138,23 @@ function EmailSentView({
   onResend,
   busy,
   error,
+  hideStep = false,
 }: {
   email: string;
   resendIn: number;
   onResend: () => void;
   busy: boolean;
   error: string | null;
+  /** Matches hidePhone on the form: with no "STEP 1 OF 2" there is no step 2. */
+  hideStep?: boolean;
 }) {
   return (
     <div>
-      <div className="eyebrow" style={{ marginBottom: 12, color: 'var(--t-4)' }}>
-        // STEP 2 OF 2
-      </div>
+      {!hideStep && (
+        <div className="eyebrow" style={{ marginBottom: 12, color: 'var(--t-4)' }}>
+          // STEP 2 OF 2
+        </div>
+      )}
       <h2
         style={{
           margin: 0,
@@ -1171,21 +1207,25 @@ function EmailSentView({
 
       <div
         style={{
-          marginTop: 12,
-          fontSize: 12,
-          color: 'var(--t-3)',
-          lineHeight: 1.5,
+          marginTop: 14,
+          padding: '12px 14px',
+          background: 'rgba(217,168,84,0.09)',
+          border: '1px solid rgba(217,168,84,0.32)',
+          borderRadius: 10,
+          fontSize: 13,
+          color: 'var(--t-2)',
+          lineHeight: 1.55,
           display: 'flex',
-          gap: 8,
+          gap: 10,
           alignItems: 'flex-start',
         }}
       >
-        <Icon name="info" size={14} color="#7a7f87" />
+        <Icon name="info" size={15} color="#d9a854" />
         <span>
-          Can&apos;t find it? Check your{' '}
-          <strong style={{ color: 'var(--t-2)' }}>Spam</strong> or{' '}
-          <strong style={{ color: 'var(--t-2)' }}>Promotions</strong> folder — sign-in emails from
-          Firebase sometimes land there.
+          <strong style={{ color: '#e8c076' }}>Check your Spam folder.</strong> Sign-in emails come
+          from <strong style={{ color: 'var(--t-1)' }}>firebaseapp.com</strong> and often land in{' '}
+          <strong style={{ color: 'var(--t-1)' }}>Spam</strong> or{' '}
+          <strong style={{ color: 'var(--t-1)' }}>Promotions</strong> rather than your inbox.
         </span>
       </div>
 

@@ -1,21 +1,32 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
+# Project-specific R8 / ProGuard rules for the release build.
 #
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Capacitor, Firebase and AndroidX all ship their own consumer rules, so only the
+# cases below need stating here.
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# ── Unused auth providers ──────────────────────────────────────────────────────
+# @capacitor-firebase/authentication compiles a handler for every provider it
+# supports. variables.gradle sets rgcfaIncludeFacebook = false (this app signs in
+# with Google and email only), so the Facebook SDK is not on the classpath — but
+# FacebookAuthProviderHandler still references it, and R8 fails the build on the
+# dangling references:
+#
+#   ERROR: R8: Missing class com.facebook.CallbackManager$Factory
+#          (referenced from FacebookAuthProviderHandler)
+#
+# The handler is never instantiated, so the references are unreachable at runtime
+# and safe to ignore. Remove this if Facebook sign-in is ever enabled.
+-dontwarn com.facebook.**
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# ── WebView bridge ─────────────────────────────────────────────────────────────
+# Capacitor calls into these from JavaScript by name via @JavascriptInterface.
+# Its own consumer rules cover the bridge, but keeping the annotated members
+# explicit means an aggressive future R8 version cannot rename them out from
+# under the WebView.
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep line numbers so Play Console crash reports stay readable after
+# deobfuscation with the mapping file.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile

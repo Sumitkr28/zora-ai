@@ -91,6 +91,7 @@ function writeSessionChat(uid: string | null, convId: string | null, messages: M
 export function ChatScreen({
   hideSuggestions = false,
   hideGuestNote = false,
+  noHistory = false,
 }: {
   /**
    * Hide the four prompt cards ("Summarize a PDF", "Explain this code", …) on a
@@ -101,6 +102,12 @@ export function ChatScreen({
   hideSuggestions?: boolean;
   /** Hide the "· guest mode — wipes on refresh" caption under the composer. */
   hideGuestNote?: boolean;
+  /**
+   * This build keeps no chat history at all. Drops the 7-day retention notice,
+   * the empty conversation list and the "save chats" wording, none of which are
+   * true when nothing is ever stored. The Android app passes this.
+   */
+  noHistory?: boolean;
 } = {}) {
   const { user, loading } = useAuth();
   const loggedIn = !!user;
@@ -515,6 +522,7 @@ export function ChatScreen({
       onSelect={handleSelectFromSidebar}
       onNew={handleNewFromSidebar}
       onDelete={handleDeleteConversation}
+      noHistory={noHistory}
     />
   );
 
@@ -603,6 +611,7 @@ function Sidebar({
   onSelect,
   onNew,
   onDelete,
+  noHistory = false,
 }: {
   loggedIn: boolean;
   userInitials: string;
@@ -612,6 +621,7 @@ function Sidebar({
   onSelect: (id: string) => void;
   onNew: () => void;
   onDelete: (id: string) => void;
+  noHistory?: boolean;
 }) {
   const grouped = React.useMemo(() => {
     const now = Date.now();
@@ -679,7 +689,7 @@ function Sidebar({
         </button>
       </div>
 
-      {loggedIn && (
+      {loggedIn && !noHistory && (
         <div
           style={{
             margin: '4px 12px 8px',
@@ -703,7 +713,22 @@ function Sidebar({
       )}
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '4px 8px 12px' }} className="no-scrollbar">
-        {loggedIn ? (
+        {noHistory ? (
+          <div
+            style={{
+              padding: '18px 14px',
+              background: 'var(--bg-2)',
+              border: '1px solid var(--bd-1)',
+              borderRadius: 10,
+              margin: '8px',
+            }}
+          >
+            <div style={{ fontSize: 12, color: 'var(--t-2)', marginBottom: 4 }}>Fresh every time</div>
+            <div style={{ fontSize: 11, color: 'var(--t-4)', lineHeight: 1.5 }}>
+              Chats are not saved. Closing this screen clears the conversation.
+            </div>
+          </div>
+        ) : loggedIn ? (
           conversations.length === 0 ? (
             <div
               style={{
@@ -856,7 +881,7 @@ function Sidebar({
             className="btn ghost"
             style={{ width: '100%', justifyContent: 'center', fontSize: 13, textDecoration: 'none' }}
           >
-            <Icon name="user" size={14} /> Log in to save chats
+            <Icon name="user" size={14} /> {noHistory ? 'Log in' : 'Log in to save chats'}
           </a>
         )}
       </div>

@@ -16,7 +16,7 @@ import { Landing } from '@/components/screens/landing';
 export default function HomePage() {
   return (
     <div style={{ minHeight: '100dvh', background: 'var(--bg-0)', position: 'relative' }}>
-      <Landing width="100vw" height="100dvh" hideIntroCta chatCtaLabel="Start chatting" />
+      <Landing width="100vw" height="100dvh" hideIntroCta chatCtaLabel="Start chatting" noHistory />
     </div>
   );
 }

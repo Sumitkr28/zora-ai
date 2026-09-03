@@ -16,6 +16,7 @@ export function Landing({
   height = 800,
   hideIntroCta = false,
   chatCtaLabel = 'Start chatting free',
+  noHistory = false,
 }: {
   width?: number | string;
   height?: number | string;
@@ -26,6 +27,11 @@ export function Landing({
   hideIntroCta?: boolean;
   /** Label for the primary CTA. Defaults to the web wording. */
   chatCtaLabel?: string;
+  /**
+   * This build stores no chat history, so the "7d history retention" stat would
+   * be false. Swapped for one that is true of the app.
+   */
+  noHistory?: boolean;
 }) {
   const isMobile = useIsMobile();
   return (
@@ -209,7 +215,7 @@ export function Landing({
             {([
               ['1M+', 'context window'],
               ['12+', 'languages'],
-              ['7d', 'history retention'],
+              noHistory ? ['Private', 'nothing stored'] : ['7d', 'history retention'],
               ['<300ms', 'first token'],
             ] as const).map(([n, l]) => (
               <div key={l}>

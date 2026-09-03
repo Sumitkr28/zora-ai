@@ -17,7 +17,7 @@ import { ChatScreen } from '@/components/screens/chat-screen';
 export default function ChatPage() {
   return (
     <div style={{ width: '100vw', height: '100dvh', overflow: 'hidden', background: 'var(--bg-0)' }}>
-      <ChatScreen hideSuggestions hideGuestNote />
+      <ChatScreen hideSuggestions hideGuestNote noHistory />
     </div>
   );
 }

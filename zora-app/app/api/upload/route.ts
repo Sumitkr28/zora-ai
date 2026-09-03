@@ -7,6 +7,18 @@ import { promises as fs } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
 
+// See the note in ../chat/route.ts — lets the Android app (origin https://localhost)
+// use this same endpoint. Additive; web behaviour is unchanged.
+const CORS = {
+  'Access-Control-Allow-Origin': 'https://localhost',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  Vary: 'Origin',
+} as const;
+
+export async function OPTIONS() {
+  return new Response(null, { status: 204, headers: CORS });
+}
+
 const MAX_BYTES: Record<string, number> = {
   pdf: 20 * 1024 * 1024,
   audio: 25 * 1024 * 1024,
@@ -38,17 +50,17 @@ function categoryOf(mime: string): keyof typeof MAX_BYTES | 'other' {
 
 export async function POST(req: Request) {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return new Response('GEMINI_API_KEY missing', { status: 500 });
+  if (!apiKey) return new Response('GEMINI_API_KEY missing', { status: 500, headers: CORS });
 
   let formData: FormData;
   try {
     formData = await req.formData();
   } catch {
-    return new Response('multipart/form-data required', { status: 400 });
+    return new Response('multipart/form-data required', { status: 400, headers: CORS });
   }
 
   const file = formData.get('file');
-  if (!(file instanceof File)) return new Response('file field required', { status: 400 });
+  if (!(file instanceof File)) return new Response('file field required', { status: 400, headers: CORS });
 
   const mimeType = file.type || 'application/octet-stream';
   const category = categoryOf(mimeType);
@@ -57,16 +69,16 @@ export async function POST(req: Request) {
     if (isOffice) {
       return new Response(
         "Word, Excel & PowerPoint files aren't supported yet — please save it as a PDF and upload that.",
-        { status: 415 },
+        { status: 415, headers: CORS },
       );
     }
-    return new Response(`Unsupported file type: ${mimeType}`, { status: 400 });
+    return new Response(`Unsupported file type: ${mimeType}`, { status: 400, headers: CORS });
   }
 
   const limit = MAX_BYTES[category];
   if (file.size > limit) {
     const mb = Math.round(limit / 1024 / 1024);
-    return new Response(`File too large. ${category} limit: ${mb} MB`, { status: 413 });
+    return new Response(`File too large. ${category} limit: ${mb} MB`, { status: 413, headers: CORS });
   }
 
   // Buffer the upload to a temp file because the Files API SDK takes a file path.
@@ -80,17 +92,20 @@ export async function POST(req: Request) {
       mimeType,
       displayName: file.name,
     });
-    return Response.json({
-      fileUri: result.file.uri,
-      mimeType,
-      name: file.name,
-      size: file.size,
-      category,
-    });
+    return Response.json(
+      {
+        fileUri: result.file.uri,
+        mimeType,
+        name: file.name,
+        size: file.size,
+        category,
+      },
+      { headers: CORS },
+    );
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Files API upload failed';
     console.error('Files API upload failed:', err);
-    return new Response(msg, { status: 502 });
+    return new Response(msg, { status: 502, headers: CORS });
   } finally {
     fs.unlink(tmpPath).catch(() => {
       /* ignore */

@@ -10,6 +10,20 @@ const SYSTEM_INSTRUCTION = `You are Zora, an AI assistant built by Xorvion.
 - Use Markdown for formatting (lists, code blocks with language hints, **bold**, etc.).
 - When a user attaches a file (image / PDF / audio / video), begin your first response with a one-line acknowledgement of what the file appears to be, then answer the prompt.`;
 
+// The Android app (zora-mobile-app) bundles its UI in the APK and runs at origin
+// https://localhost, so its calls to this endpoint are cross-origin. These headers
+// let the same backend serve both clients. Additive only — the web app's own
+// same-origin requests are unaffected.
+const CORS = {
+  'Access-Control-Allow-Origin': 'https://localhost',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  Vary: 'Origin',
+} as const;
+
+export async function OPTIONS() {
+  return new Response(null, { status: 204, headers: CORS });
+}
+
 type ModelTier = 'Lite' | 'Pro' | 'Max';
 
 // Collect every configured Gemini API key, in failover order.
@@ -87,15 +101,18 @@ export async function POST(req: Request) {
   try {
     body = (await req.json()) as ChatRequestBody;
   } catch {
-    return new Response('Invalid JSON body', { status: 400 });
+    return new Response('Invalid JSON body', { status: 400, headers: CORS });
   }
   if (!Array.isArray(body.messages) || body.messages.length === 0) {
-    return new Response('messages[] required', { status: 400 });
+    return new Response('messages[] required', { status: 400, headers: CORS });
   }
 
   const apiKeys = getApiKeys();
   if (apiKeys.length === 0) {
-    return new Response('GEMINI_API_KEY missing — fill it in zora-app/.env.local', { status: 500 });
+    return new Response('GEMINI_API_KEY missing — fill it in zora-app/.env.local', {
+      status: 500,
+      headers: CORS,
+    });
   }
 
   const contents = toGeminiContents(body.messages);
@@ -125,7 +142,7 @@ export async function POST(req: Request) {
     const msg = lastErr instanceof Error ? lastErr.message : 'Gemini call failed';
     const status = isQuotaError(lastErr) ? 429 : 502;
     console.error('Gemini call failed (all keys exhausted):', lastErr);
-    return new Response(msg, { status });
+    return new Response(msg, { status, headers: CORS });
   }
 
   const encoder = new TextEncoder();
@@ -148,6 +165,7 @@ export async function POST(req: Request) {
 
   return new Response(stream, {
     headers: {
+      ...CORS,
       'Content-Type': 'text/plain; charset=utf-8',
       'Cache-Control': 'no-store',
       'X-Accel-Buffering': 'no',

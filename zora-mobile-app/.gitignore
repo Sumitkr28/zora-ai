@@ -1,0 +1,31 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Secrets
+.env.local
+.env.*.local
+
+# ── Android ──
+# android/ IS tracked: it carries hand-made changes (targetSdk 35, the release
+# signing config, splash colours) that `npx cap add android` would not recreate.
+# Only generated output and secrets are ignored.
+android/build/
+android/app/build/
+android/.gradle/
+android/.idea/
+android/local.properties
+android/capacitor-cordova-android-plugins/
+# Copied in by `cap sync` from out/ — regenerated every build.
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+
+# Play Store signing material — NEVER commit these.
+*.keystore
+*.jks
+android/key.properties
+# Firebase Android config: contains your project's client IDs.
+android/app/google-services.json

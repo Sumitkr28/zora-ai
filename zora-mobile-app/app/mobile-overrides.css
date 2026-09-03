@@ -1,0 +1,76 @@
+/*
+ * Mobile-only CSS, layered on top of the web app's globals.css.
+ * The design tokens, fonts, keyframes and component classes all come from
+ * ../zora-app/app/globals.css — this file only removes what must not ship in a
+ * Play Store build, and adds native-app polish.
+ */
+
+/* ──────────────────────────────────────────────────────────────
+ * No subscriptions in the Android build.
+ *
+ * Google Play requires digital subscriptions to go through Play Billing, so the
+ * app ships with no plans, no prices and no upgrade path. There is no /pricing
+ * route in this project, and these four links in the SHARED components are the
+ * only ways to reach it:
+ *   zora-app/components/screens/chat-screen.tsx:947          (chat "UPGRADE")
+ *   zora-app/components/screens/landing.tsx:236              (landing nav)
+ *   zora-app/components/screens/profile.tsx:469              (account "Billing")
+ *   zora-app/components/screens/about-contact-terms.tsx:1431 (footer)
+ *
+ * All four render as plain <a href="/pricing">, so one attribute selector hides
+ * every one of them without touching a line of the web app.
+ *
+ * ponytail: CSS selector keyed on the href. If a future web change routes
+ * pricing through a button or a different path, this stops matching — the fix is
+ * to add that selector here, and the mobile build's own smoke test
+ * (npm run verify:no-pricing) fails loudly if a /pricing link ever renders.
+ * ────────────────────────────────────────────────────────────── */
+a[href="/pricing"],
+a[href="/pricing/"] {
+  display: none !important;
+}
+
+/* Phone sign-in is NOT hidden here — it is genuinely not rendered.
+ * app/login/page.tsx passes `hidePhone` to the shared LoginScreen, which omits
+ * the row, its "Coming soon" caption, the "STEP 1 OF 2" eyebrow and the
+ * "OR CONTINUE WITH" divider. A prop beats a CSS rule that can silently stop
+ * matching; `npm run verify` asserts none of that markup reaches the build. */
+
+/* ──────────────────────────────────────────────────────────────
+ * Native-app feel
+ * ────────────────────────────────────────────────────────────── */
+
+/* A WebView is not a browser: no text selection, no long-press callout, no
+   overscroll bounce, no tap highlight. Inputs and chat copy stay selectable. */
+body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+input,
+textarea,
+[contenteditable='true'],
+.zora-md,
+.zora-selectable {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Keep the app clear of the status bar and gesture pill. The web app already
+   uses env() padding in the chat composer; this covers every other screen. */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--bg-0);
+}
+
+/* Android WebViews ignore `height: 100dvh` until the first resize, which makes
+   the first paint of every full-screen shell too tall. Pin it explicitly. */
+html,
+body {
+  height: 100%;
+  overflow-x: hidden;
+}

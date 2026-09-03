@@ -1,0 +1,13 @@
+# Copy to android/key.properties and fill in. NEVER commit the real file or the
+# .jks — losing or leaking the upload key means you can no longer update the app
+# on Play without Google's key-reset process.
+#
+# Generate the keystore first (from the android/ directory):
+#
+#   keytool -genkey -v -keystore zora-upload.jks -keyalg RSA -keysize 2048 \
+#           -validity 10000 -alias zora
+#
+storeFile=zora-upload.jks
+storePassword=<keystore password>
+keyAlias=zora
+keyPassword=<key password>

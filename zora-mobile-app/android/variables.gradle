@@ -1,0 +1,31 @@
+ext {
+    minSdkVersion = 23
+    // Google Play requires new app submissions to target API 35 (Android 15).
+    // Capacitor scaffolds 34, which the Play Console rejects at upload.
+    compileSdkVersion = 35
+    targetSdkVersion = 35
+    // Pinned to a version actually present in this machine's SDK
+    // (build-tools 35.0.0 / 36.1.0 / 37.0.0 installed). AGP would otherwise
+    // default to 34.0.0 and try to DOWNLOAD it, which fails behind this
+    // machine's TLS interception with "PKIX path building failed".
+    buildToolsVersion = '35.0.0'
+    androidxActivityVersion = '1.8.0'
+    androidxAppCompatVersion = '1.6.1'
+    androidxCoordinatorLayoutVersion = '1.2.0'
+    androidxCoreVersion = '1.12.0'
+    androidxFragmentVersion = '1.6.2'
+    coreSplashScreenVersion = '1.0.1'
+    androidxWebkitVersion = '1.9.0'
+    junitVersion = '4.13.2'
+    androidxJunitVersion = '1.1.5'
+    androidxEspressoCoreVersion = '3.5.1'
+    cordovaAndroidVersion = '10.1.1'
+
+    // @capacitor-firebase/authentication ships its Google Sign-In dependency
+    // behind this flag, which defaults to FALSE — leaving play-services-auth as
+    // compileOnly. The app then builds fine and fails at runtime the moment
+    // signInWithGoogle() is called. Must be true for native Google sign-in.
+    rgcfaIncludeGoogle = true
+    // Facebook login is not used; leaving this false keeps its SDK out of the APK.
+    rgcfaIncludeFacebook = false
+}

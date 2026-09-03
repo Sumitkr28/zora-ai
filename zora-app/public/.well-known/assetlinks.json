@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.xorvion.zora",
+      "sha256_cert_fingerprints": [
+        "01:B8:E9:F1:10:ED:6D:A9:A0:37:AC:F2:AA:9D:0C:14:31:9C:3A:2D:72:98:AA:A7:4F:F4:84:E0:DD:AA:A6:C6"
+      ]
+    }
+  }
+]

@@ -102,9 +102,21 @@ function dialOf(iso: string): string {
 export function LoginScreen({
   width = 1280,
   height = 800,
+  hidePhone = false,
 }: {
   width?: number | string;
   height?: number | string;
+  /**
+   * Hide every phone-sign-in affordance: the country-picker row, its
+   * "Coming soon" caption, the "// STEP 1 OF 2" eyebrow, the "we'll send a
+   * 6-digit code" subtitle and the "OR CONTINUE WITH" divider — leaving just
+   * the provider buttons.
+   *
+   * Defaults to false, so the web login is unchanged. The Android app
+   * (zora-mobile-app) passes true: Firebase Spark blocks SMS, so shipping a
+   * dead control in a Play Store build makes no sense.
+   */
+  hidePhone?: boolean;
 }) {
   const { user } = useAuth();
   const [view, setView] = React.useState<View>('form');
@@ -343,6 +355,7 @@ export function LoginScreen({
                 onEmailOpen={handleEmailOpen}
                 busy={busy}
                 error={error}
+                hidePhone={hidePhone}
               />
             )}
             {view === 'otp' && (
@@ -508,6 +521,7 @@ function FormView({
   onEmailOpen,
   busy,
   error,
+  hidePhone = false,
 }: {
   identifier: string;
   setIdentifier: (v: string) => void;
@@ -521,6 +535,7 @@ function FormView({
   onEmailOpen: () => void;
   busy: boolean;
   error: string | null;
+  hidePhone?: boolean;
 }) {
   const isMobile = useIsMobile();
   return (
@@ -530,12 +545,15 @@ function FormView({
           <ZoraMark size={120} />
         </div>
       )}
-      <div
-        className="eyebrow"
-        style={{ marginBottom: 12, color: 'var(--t-4)' }}
-      >
-        // STEP 1 OF 2
-      </div>
+      {/* "STEP 1 OF 2" describes the phone → OTP flow; meaningless without it. */}
+      {!hidePhone && (
+        <div
+          className="eyebrow"
+          style={{ marginBottom: 12, color: 'var(--t-4)' }}
+        >
+          // STEP 1 OF 2
+        </div>
+      )}
       <h2
         style={{
           margin: 0,
@@ -550,54 +568,64 @@ function FormView({
         Sign in to Zora
       </h2>
       <p style={{ margin: '0 0 24px', fontSize: 14, color: 'var(--t-3)' }}>
-        We&apos;ll send a 6-digit code to verify it&apos;s you.
+        {/* Straight apostrophes, matching the &apos; entities this text used before
+            it moved into a string — keeps the web copy byte-identical. */}
+        {hidePhone
+          ? "Choose how you'd like to continue."
+          : "We'll send a 6-digit code to verify it's you."}
       </p>
 
-      {/* Phone section — disabled because Phone OTP requires Blaze; flagged Coming soon. */}
-      <div
-        style={{
-          display: 'flex',
-          gap: 8,
-          marginBottom: 10,
-          opacity: 0.5,
-          pointerEvents: 'none',
-          userSelect: 'none',
-        }}
-        aria-disabled="true"
-        title="Phone sign-in coming soon"
-      >
-        <CountryPicker value={countryIso} onChange={setCountryIso} />
-        <input
-          className="input"
-          placeholder=""
-          value=""
-          readOnly
-          tabIndex={-1}
-          aria-label="Phone number"
-          style={{
-            flex: 1,
-            fontFamily: "'JetBrains Mono', monospace",
-            letterSpacing: '0.05em',
-            fontSize: 13,
-            cursor: 'not-allowed',
-          }}
-        />
-      </div>
-      <div
-        style={{
-          fontSize: 11,
-          color: 'var(--t-2)',
-          fontFamily: "'JetBrains Mono', monospace",
-          fontStyle: 'italic',
-          letterSpacing: '0.15em',
-          textTransform: 'uppercase',
-          marginBottom: 16,
-        }}
-      >
-        Coming soon
-      </div>
+      {/* Phone section — disabled because Phone OTP requires Blaze; flagged Coming soon.
+          Omitted entirely when hidePhone (the Android build). */}
+      {!hidePhone && (
+        <>
+          <div
+            style={{
+              display: 'flex',
+              gap: 8,
+              marginBottom: 10,
+              opacity: 0.5,
+              pointerEvents: 'none',
+              userSelect: 'none',
+            }}
+            aria-disabled="true"
+            title="Phone sign-in coming soon"
+          >
+            <CountryPicker value={countryIso} onChange={setCountryIso} />
+            <input
+              className="input"
+              placeholder=""
+              value=""
+              readOnly
+              tabIndex={-1}
+              aria-label="Phone number"
+              style={{
+                flex: 1,
+                fontFamily: "'JetBrains Mono', monospace",
+                letterSpacing: '0.05em',
+                fontSize: 13,
+                cursor: 'not-allowed',
+              }}
+            />
+          </div>
+          <div
+            style={{
+              fontSize: 11,
+              color: 'var(--t-2)',
+              fontFamily: "'JetBrains Mono', monospace",
+              fontStyle: 'italic',
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              marginBottom: 16,
+            }}
+          >
+            Coming soon
+          </div>
 
-      <Divider label="OR CONTINUE WITH" />
+          {/* "OR continue with" only reads correctly when something precedes it. */}
+          <Divider label="OR CONTINUE WITH" />
+        </>
+      )}
 
       <button
         onClick={onGoogle}

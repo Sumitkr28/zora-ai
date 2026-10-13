@@ -2,7 +2,22 @@
 // The GEMINI_API_KEY env var is read here on the server only — never sent to the browser.
 // Plan §3.4 mandates server-side key storage.
 
-import { GoogleGenerativeAI, type Content, type Part } from '@google/generative-ai';
+import {
+  GoogleGenerativeAI,
+  HarmBlockThreshold,
+  HarmCategory,
+  type Content,
+  type Part,
+} from '@google/generative-ai';
+
+// Gemini 2.5 ships with its safety filters off. Google Play's AI-generated content
+// policy requires blocking sexual content, and the app's IARC rating assumes these.
+const SAFETY_SETTINGS = [
+  { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
+  { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+  { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+  { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+];
 
 const SYSTEM_INSTRUCTION = `You are Zora, an AI assistant built by Xorvion.
 - Be concise and helpful.
@@ -58,6 +73,7 @@ function makeModel(apiKey: string, modelTier: ModelTier) {
     model: 'gemini-2.5-flash',
     systemInstruction: SYSTEM_INSTRUCTION,
     generationConfig: configs[modelTier] ?? configs.Pro,
+    safetySettings: SAFETY_SETTINGS,
   });
 }
 
@@ -154,9 +170,14 @@ export async function POST(req: Request) {
           if (text) controller.enqueue(encoder.encode(text));
         }
       } catch (err) {
-        console.error('Gemini stream error:', err);
         const msg = err instanceof Error ? err.message : 'stream error';
-        controller.enqueue(encoder.encode(`\n\n[stream error: ${msg}]`));
+        if (/blocked/i.test(msg)) {
+          // The SDK throws "…blocked due to SAFETY" when SAFETY_SETTINGS stop a prompt or reply.
+          controller.enqueue(encoder.encode("\n\nSorry, Zora can't help with that request."));
+        } else {
+          console.error('Gemini stream error:', err);
+          controller.enqueue(encoder.encode(`\n\n[stream error: ${msg}]`));
+        }
       } finally {
         controller.close();
       }

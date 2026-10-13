@@ -2,8 +2,8 @@
 
 **Zora** is a free-tier AI chat assistant — a full-stack product designed and built end-to-end by **[Sumit Kumar](https://sumitkr28.vercel.app/)**, creator of **Xorvion**. It streams responses from Google's Gemini models, remembers your conversations, reads the files you upload, and wraps it all in a fast, dark, brushed-steel interface.
 
-[![Live Web App](https://img.shields.io/badge/▶_Live_Web_App-zora--chatbot.vercel.app-2ea043?style=for-the-badge&logo=vercel&logoColor=white&labelColor=0d1117)](https://zora-chatbot.vercel.app/)
 [![Get it on Google Play](https://img.shields.io/badge/Get_it_on-Google_Play-3ddc84?style=for-the-badge&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI%2BPHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTMgMnYyMGwxMC0xMHoiLz48cGF0aCBmaWxsPSIjMzRBODUzIiBkPSJNMyAybDEyLjg2IDcuMTRMMTMgMTJ6Ii8%2BPHBhdGggZmlsbD0iI0VBNDMzNSIgZD0iTTMgMjJsMTIuODYtNy4xNEwxMyAxMnoiLz48cGF0aCBmaWxsPSIjRkJCQzA0IiBkPSJNMTUuODYgOS4xNEwyMSAxMmwtNS4xNCAyLjg2TDEzIDEyeiIvPjwvc3ZnPgo%3D&labelColor=0d1117)](https://play.google.com/store/apps/details?id=com.xorvion.zora)
+[![Live Web App](https://img.shields.io/badge/▶_Live_Web_App-zora--chatbot.vercel.app-2ea043?style=for-the-badge&logo=vercel&logoColor=white&labelColor=0d1117)](https://zora-chatbot.vercel.app/)
 
 ---
 

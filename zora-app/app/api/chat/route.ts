@@ -51,11 +51,12 @@ function getApiKeys(): string[] {
     .filter((k): k is string => !!k && k.length > 0);
 }
 
-// True when the error looks like a rate-limit / quota-exhausted response (HTTP 429,
-// RESOURCE_EXHAUSTED, "limit: 0", etc.) — i.e. worth retrying with the next key.
-function isQuotaError(err: unknown): boolean {
+// True when the error is worth retrying with the next key: quota exhausted (HTTP 429,
+// RESOURCE_EXHAUSTED, "limit: 0") or Google's temporary overload (503 "high demand"),
+// which hits every Gemini model now and then.
+function isRetryableError(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err);
-  return /\b429\b|quota|rate.?limit|resource.?exhausted|limit:\s*0/i.test(msg);
+  return /\b(429|503)\b|quota|rate.?limit|resource.?exhausted|limit:\s*0|high demand|overloaded/i.test(msg);
 }
 
 // Build a gemini-3.5-flash-lite model bound to a specific API key + tier params.
@@ -146,8 +147,8 @@ export async function POST(req: Request) {
       break; // this key worked — stop trying
     } catch (err) {
       lastErr = err;
-      if (isQuotaError(err) && i < apiKeys.length - 1) {
-        console.warn(`Gemini key #${i + 1} quota-exhausted — failing over to key #${i + 2}`);
+      if (isRetryableError(err) && i < apiKeys.length - 1) {
+        console.warn(`Gemini key #${i + 1} failed (quota or overload) — failing over to key #${i + 2}`);
         continue; // try the next key
       }
       break; // non-quota error, or no more keys to try
@@ -156,7 +157,7 @@ export async function POST(req: Request) {
 
   if (!result) {
     const msg = lastErr instanceof Error ? lastErr.message : 'Gemini call failed';
-    const status = isQuotaError(lastErr) ? 429 : 502;
+    const status = isRetryableError(lastErr) ? 429 : 502;
     console.error('Gemini call failed (all keys exhausted):', lastErr);
     return new Response(msg, { status, headers: CORS });
   }

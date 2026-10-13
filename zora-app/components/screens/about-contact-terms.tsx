@@ -929,24 +929,32 @@ export function PrivacyScreen({ width = 1280, height = 800 }: { width?: number |
     },
     {
       n: '05',
+      // Linked from the Google Play "Delete account URL": /privacy#delete-account
+      id: 'delete-account',
+      title: 'Deleting your Zora account',
+      body:
+        'To delete your Zora account (website or Android app): sign in at zora-chatbot.vercel.app/account, tap "Delete account", type DELETE and confirm. This immediately and permanently deletes your profile (name, email address, photo), every saved chat and its messages, and your sign-in account. Messages you sent through the contact form are kept so we can reply; email xorvion.ai@gmail.com to have them removed too. Files you uploaded are already deleted by Google within about 48 hours. Can\'t sign in? Email xorvion.ai@gmail.com from your account\'s address and we will delete it for you within 30 days.',
+    },
+    {
+      n: '06',
       title: 'On-device storage',
       body:
         "Zora uses your browser's local and session storage to keep you signed in and to keep your current chat alive across reloads and navigation. We do not use third-party advertising or tracking cookies.",
     },
     {
-      n: '06',
+      n: '07',
       title: 'Your rights',
       body:
         'You can access, export, or delete your data at any time. Manage it from your account page, or email us and we will help. We respond to privacy requests within 30 days.',
     },
     {
-      n: '07',
+      n: '08',
       title: "Children's privacy",
       body:
         'Zora is not directed at children under 13 (or the minimum age required in your country). We do not knowingly collect personal data from children. If you believe a child has used Zora, contact us and we will remove the data.',
     },
     {
-      n: '08',
+      n: '09',
       title: 'Changes',
       body:
         'We may update this policy. Material changes will be announced at least 14 days in advance via email and an in-product banner.',
@@ -993,7 +1001,7 @@ export function PrivacyScreen({ width = 1280, height = 800 }: { width?: number |
             color: 'var(--t-3)',
           }}
         >
-          <span className="mono">Last updated: October 13, 2026</span>
+          <span className="mono">Last updated: October 14, 2026</span>
           <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--t-4)' }} />
           <span className="mono">v1.0</span>
         </div>
@@ -1026,6 +1034,7 @@ export function PrivacyScreen({ width = 1280, height = 800 }: { width?: number |
           {sections.map((s) => (
             <div
               key={s.n}
+              id={s.id}
               style={{
                 display: 'grid',
                 gridTemplateColumns: isMobile ? '1fr' : '60px 1fr',

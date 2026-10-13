@@ -79,7 +79,7 @@ export function AboutScreen({ width = 1280, height = 800 }: { width?: number | s
               everything syncs. Don&apos;t sign in; it forgets you the moment you leave.
             </p>
             <p>
-              Xorvion is a small team in Noida building tools we want to use ourselves. Zora is our first
+              Xorvion is an independent, solo startup in Noida building tools we want to use ourselves. Zora is our first
               product. We&apos;re shipping fast and reading every email.
             </p>
           </div>
@@ -122,7 +122,7 @@ export function AboutScreen({ width = 1280, height = 800 }: { width?: number | s
                 {(
                   [
                     ['NAME', 'Zora'],
-                    ['MAKER', 'Xorvion Pvt Ltd'],
+                    ['MAKER', 'Xorvion'],
                     ['RELEASE', 'May 2026'],
                     ['MODELS', 'Lite · Pro · Max'],
                   ] as const
@@ -743,7 +743,7 @@ export function TermsScreen({ width = 1280, height = 800 }: { width?: number | s
       n: '01',
       title: 'Using Zora',
       body:
-        'Zora is provided by Xorvion Pvt Ltd. You may use Zora for personal, business, and educational purposes. You agree not to abuse, reverse-engineer, or use the service to generate content that violates applicable law.',
+        'Zora is provided by Xorvion. You may use Zora for personal, business, and educational purposes. You agree not to abuse, reverse-engineer, or use the service to generate content that violates applicable law.',
     },
     {
       n: '02',
@@ -1463,7 +1463,7 @@ export function SiteFooter() {
           letterSpacing: '0.1em',
         }}
       >
-        <span>© 2026 XORVION PVT LTD · ALL RIGHTS RESERVED</span>
+        <span>© 2026 XORVION · ALL RIGHTS RESERVED</span>
         <span>XORVION.AI@GMAIL.COM</span>
       </div>
     </div>

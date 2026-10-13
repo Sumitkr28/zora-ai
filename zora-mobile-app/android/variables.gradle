@@ -1,10 +1,10 @@
 ext {
     // Play's automatic protection rejects bundles below API 24 (Android 7.0).
     minSdkVersion = 24
-    // Google Play requires new app submissions to target API 35 (Android 15).
-    // Capacitor scaffolds 34, which the Play Console rejects at upload.
-    compileSdkVersion = 35
-    targetSdkVersion = 35
+    // Google Play requires new app submissions to target API 36 (Android 16)
+    // as of 2026. Capacitor 6 scaffolds 34; the Play Console rejects anything older.
+    compileSdkVersion = 36
+    targetSdkVersion = 36
     // Pinned to a version actually present in this machine's SDK
     // (build-tools 35.0.0 / 36.1.0 / 37.0.0 installed). AGP would otherwise
     // default to 34.0.0 and try to DOWNLOAD it, which fails behind this

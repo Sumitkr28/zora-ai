@@ -993,7 +993,7 @@ export function PrivacyScreen({ width = 1280, height = 800 }: { width?: number |
             color: 'var(--t-3)',
           }}
         >
-          <span className="mono">Last updated: May 27, 2026</span>
+          <span className="mono">Last updated: October 13, 2026</span>
           <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--t-4)' }} />
           <span className="mono">v1.0</span>
         </div>
@@ -1014,8 +1014,9 @@ export function PrivacyScreen({ width = 1280, height = 800 }: { width?: number |
           <div>
             <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 6 }}>The plain-language version</div>
             <p style={{ margin: 0, fontSize: 13, color: 'var(--t-3)', lineHeight: 1.6 }}>
-              We collect what we need to run Zora — your sign-in details, your chats, and anything you upload.
-              Your chats auto-delete after 7 days. Guest chats are never saved. We don&apos;t sell your data or
+              This policy covers the Zora website and the Zora Android app. We collect what we need to run Zora —
+              your sign-in details, your chats, and anything you upload. Your chats auto-delete after 7 days. Guest
+              chats are never saved. The Android app does not save your chat history. We don&apos;t sell your data or
               train on your Pro/Max conversations. Delete everything any time from your account.
             </p>
           </div>

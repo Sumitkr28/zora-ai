@@ -1,5 +1,6 @@
 ext {
-    minSdkVersion = 23
+    // Play's automatic protection rejects bundles below API 24 (Android 7.0).
+    minSdkVersion = 24
     // Google Play requires new app submissions to target API 35 (Android 15).
     // Capacitor scaffolds 34, which the Play Console rejects at upload.
     compileSdkVersion = 35

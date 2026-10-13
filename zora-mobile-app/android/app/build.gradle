@@ -29,7 +29,13 @@ android {
     signingConfigs {
         release {
             if (keystorePropertiesFile.exists()) {
-                storeFile file(keystoreProperties['storeFile'])
+                // rootProject.file, not file(): the latter resolves against the app
+                // module (android/app/), so a plain "zora-upload.jks" was looked up
+                // as android/app/zora-upload.jks and the build failed with
+                // "Keystore file ... not found for signing config 'release'".
+                // Resolving against android/ matches where key.properties itself
+                // lives, which is where the keystore is created.
+                storeFile rootProject.file(keystoreProperties['storeFile'])
                 storePassword keystoreProperties['storePassword']
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']

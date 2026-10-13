@@ -29,3 +29,7 @@ android/app/src/main/assets/capacitor.plugins.json
 android/key.properties
 # Firebase Android config: contains your project's client IDs.
 android/app/google-services.json
+
+# Built APKs staged for direct download. Rebuild with:
+#   ./gradlew assembleRelease   (then copy from android/app/build/outputs/apk/release/)
+dist/

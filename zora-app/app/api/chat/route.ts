@@ -1,4 +1,4 @@
-// POST /api/chat — streams a Gemini 1.5 Flash response back to the client as plain-text chunks.
+// POST /api/chat — streams a Gemini response back to the client as plain-text chunks.
 // The GEMINI_API_KEY env var is read here on the server only — never sent to the browser.
 // Plan §3.4 mandates server-side key storage.
 
@@ -10,7 +10,7 @@ import {
   type Part,
 } from '@google/generative-ai';
 
-// Gemini 2.5 ships with its safety filters off. Google Play's AI-generated content
+// Current Gemini models ship with their safety filters off. Google Play's AI-generated content
 // policy requires blocking sexual content, and the app's IARC rating assumes these.
 const SAFETY_SETTINGS = [
   { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE },
@@ -58,10 +58,10 @@ function isQuotaError(err: unknown): boolean {
   return /\b429\b|quota|rate.?limit|resource.?exhausted|limit:\s*0/i.test(msg);
 }
 
-// Build a gemini-2.5-flash model bound to a specific API key + tier params.
-// Google moved gemini-2.0-flash off the free tier in 2025. gemini-2.5-flash is the
-// current free-tier model. If you see 429 errors with "limit: 0", try
-// 'gemini-2.5-flash-lite' here for an even lighter free option.
+// Build a gemini-3.5-flash-lite model bound to a specific API key + tier params.
+// Chosen by the user 2026-10-14 (was gemini-2.5-flash); tested on both keys. It thinks
+// only when it needs to (0 thinking tokens on normal chat), so Lite's 1024 cap holds.
+// If you see 429 errors with "limit: 0", the key's project lost free-tier access to it.
 function makeModel(apiKey: string, modelTier: ModelTier) {
   const genAI = new GoogleGenerativeAI(apiKey);
   const configs = {
@@ -70,7 +70,7 @@ function makeModel(apiKey: string, modelTier: ModelTier) {
     Max: { temperature: 0.95, maxOutputTokens: 4096 },
   } as const;
   return genAI.getGenerativeModel({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-3.5-flash-lite',
     systemInstruction: SYSTEM_INSTRUCTION,
     generationConfig: configs[modelTier] ?? configs.Pro,
     safetySettings: SAFETY_SETTINGS,

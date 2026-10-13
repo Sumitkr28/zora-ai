@@ -109,7 +109,7 @@ export async function createConversation(uid: string, firstMessageText: string):
   const ref = await addDoc(collection(db, 'conversations'), {
     userId: uid,
     title: titleFromFirstMessage(firstMessageText) || 'New chat',
-    model: 'gemini-1.5-flash',
+    model: 'gemini-3.5-flash-lite',
     createdAt: serverTimestamp(),
     lastMessageAt: serverTimestamp(),
     expiresAt: Timestamp.fromMillis(now + SEVEN_DAYS_MS),

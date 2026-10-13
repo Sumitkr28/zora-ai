@@ -9,7 +9,7 @@
 
 ## ✨ Features
 
-- **Streaming AI chat** — real-time, token-by-token responses powered by **Gemini 2.5 Flash**.
+- **Streaming AI chat** — real-time, token-by-token responses powered by **Gemini 3.5 Flash-Lite**.
 - **Sign in your way** — Google one-tap and passwordless **email magic-link** sign-in (Firebase Auth). Guest mode too — chat instantly, no account needed.
 - **Your history, saved** — conversations persist for logged-in users and auto-expire after 7 days. Pick up exactly where you left off, even after navigating away.
 - **Talks to your files** — upload **images, PDFs, audio, and video** and ask Zora about them (via the Gemini Files API).
@@ -25,7 +25,7 @@
 | Layer | Choice |
 |---|---|
 | Framework | Next.js 14 (App Router) · React 18 · TypeScript |
-| AI | Google **Gemini 2.5 Flash** (`@google/generative-ai`) |
+| AI | Google **Gemini 3.5 Flash-Lite** (`@google/generative-ai`) |
 | Auth | Firebase Authentication (Google · Email link) |
 | Database | Cloud Firestore (conversations, messages, feedback) |
 | File uploads | Gemini Files API |
